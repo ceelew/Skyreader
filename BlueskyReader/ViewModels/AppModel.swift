@@ -7,6 +7,7 @@ import SwiftData
 final class AppModel {
     let client: ATProtoClient
     let ingestService: IngestService
+    let headlineResolver: HeadlineResolver
 
     var isAuthenticated: Bool = false
     var currentHandle: String?
@@ -18,6 +19,7 @@ final class AppModel {
     init(client: ATProtoClient) {
         self.client = client
         self.ingestService = IngestService(client: client)
+        self.headlineResolver = HeadlineResolver()
     }
 
     func refreshTimeline(context: ModelContext) async {
@@ -30,6 +32,7 @@ final class AppModel {
             let result = try await ingestService.refresh(context: context)
             lastRefreshNewItemCount = result.newItemCount
             isOffline = false
+            Task { await headlineResolver.resolveUnresolvedHeadlines(context: context) }
         } catch {
             lastError = error.localizedDescription
             if let urlError = (error as? ATProtoError), case .network = urlError {

@@ -26,9 +26,13 @@
 		C0A7EA56C1227FFE119AE808 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A69992EDD3BA1BC515BBD883 /* KeychainStore.swift */; };
 		C1DD7504C0BD57440AEC3EF6 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43A1FC8D85FE22C539616103 /* LoginView.swift */; };
 		C6EAC2FF14AA028606CD55DF /* ReadingListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86819AB2830ABE741C5F5FD5 /* ReadingListView.swift */; };
+		CF98B8BBDA45EA5680BF9806 /* HeadlinePageFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D2B28462884C1B4703EB34C /* HeadlinePageFetcher.swift */; };
+		D4388153064DDD98D641AFF3 /* HTMLMetaParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E3561BE62E6DC8620BBD54 /* HTMLMetaParser.swift */; };
+		EDA65EDF9D2253C4EE35128B /* HeadlineResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 070CB01E2FE759458C4C8642 /* HeadlineResolver.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		070CB01E2FE759458C4C8642 /* HeadlineResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadlineResolver.swift; sourceTree = "<group>"; };
 		0B6827B254C263307B0732DC /* BlueskyReader.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BlueskyReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0BBB4279D762914D16A2A8B6 /* IngestService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngestService.swift; sourceTree = "<group>"; };
 		1F4D341ACF81063D3C67A032 /* ReaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReaderView.swift; sourceTree = "<group>"; };
@@ -43,9 +47,11 @@
 		86819AB2830ABE741C5F5FD5 /* ReadingListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingListView.swift; sourceTree = "<group>"; };
 		86FFE1CA6140B3CA5084FEFB /* DateGrouping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateGrouping.swift; sourceTree = "<group>"; };
 		978E5CD58EE4324E3AEB43E4 /* LinkExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkExtractor.swift; sourceTree = "<group>"; };
+		9D2B28462884C1B4703EB34C /* HeadlinePageFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadlinePageFetcher.swift; sourceTree = "<group>"; };
 		A451995DE5D5A06AC2939769 /* PublicationMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicationMapper.swift; sourceTree = "<group>"; };
 		A69992EDD3BA1BC515BBD883 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
 		A80A2D46D8EBB64BC8E86290 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		C1E3561BE62E6DC8620BBD54 /* HTMLMetaParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLMetaParser.swift; sourceTree = "<group>"; };
 		C5729E8BCD86FDA67A50FF3A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D0E6F9D7D1140955E2299618 /* ATProtoModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ATProtoModels.swift; sourceTree = "<group>"; };
 		DE2BD7BEC59F9D54C3654616 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
@@ -97,6 +103,9 @@
 			children = (
 				86FFE1CA6140B3CA5084FEFB /* DateGrouping.swift */,
 				2C18AAD5D47E32902FD63853 /* DateParsing.swift */,
+				9D2B28462884C1B4703EB34C /* HeadlinePageFetcher.swift */,
+				070CB01E2FE759458C4C8642 /* HeadlineResolver.swift */,
+				C1E3561BE62E6DC8620BBD54 /* HTMLMetaParser.swift */,
 				0BBB4279D762914D16A2A8B6 /* IngestService.swift */,
 				978E5CD58EE4324E3AEB43E4 /* LinkExtractor.swift */,
 				A451995DE5D5A06AC2939769 /* PublicationMapper.swift */,
@@ -229,6 +238,9 @@
 				6CF67FB471901C5FB589002C /* BlueskyReaderApp.swift in Sources */,
 				9E8B158DC5E8C40C9A3CD2A4 /* DateGrouping.swift in Sources */,
 				3100E318657871155712B0BD /* DateParsing.swift in Sources */,
+				D4388153064DDD98D641AFF3 /* HTMLMetaParser.swift in Sources */,
+				CF98B8BBDA45EA5680BF9806 /* HeadlinePageFetcher.swift in Sources */,
+				EDA65EDF9D2253C4EE35128B /* HeadlineResolver.swift in Sources */,
 				27DC5014573B08DF3F5A5B9F /* IngestService.swift in Sources */,
 				168BB27824E1EDB154BFA405 /* IngestState.swift in Sources */,
 				C0A7EA56C1227FFE119AE808 /* KeychainStore.swift in Sources */,
