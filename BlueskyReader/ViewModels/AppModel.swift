@@ -15,6 +15,9 @@ final class AppModel {
     var lastError: String?
     var isOffline: Bool = false
     var lastRefreshNewItemCount: Int?
+    var lastRefreshDate: Date?
+
+    private let staleThreshold: TimeInterval = 15 * 60
 
     init(client: ATProtoClient) {
         self.client = client
@@ -31,6 +34,7 @@ final class AppModel {
         do {
             let result = try await ingestService.refresh(context: context)
             lastRefreshNewItemCount = result.newItemCount
+            lastRefreshDate = Date()
             isOffline = false
             Task { await headlineResolver.resolveUnresolvedHeadlines(context: context) }
         } catch {
@@ -39,6 +43,14 @@ final class AppModel {
                 isOffline = true
             }
         }
+    }
+
+    /// Called when the app returns to the foreground — refreshes only if it's
+    /// been a while, so backgrounding briefly doesn't spam the API (§5).
+    func refreshIfStale(context: ModelContext) async {
+        guard isAuthenticated, !isRefreshing else { return }
+        if let lastRefreshDate, Date().timeIntervalSince(lastRefreshDate) < staleThreshold { return }
+        await refreshTimeline(context: context)
     }
 
     /// Call on launch to sync UI state with the persisted session.

@@ -6,6 +6,8 @@ struct BlueskyReaderApp: App {
     let container: ModelContainer
     let appModel: AppModel
 
+    @Environment(\.scenePhase) private var scenePhase
+
     init() {
         do {
             container = try ModelContainer(for: LinkItem.self, IngestState.self)
@@ -19,7 +21,15 @@ struct BlueskyReaderApp: App {
         WindowGroup {
             RootView()
                 .environment(appModel)
+                .onChange(of: scenePhase) { _, newPhase in
+                    if newPhase == .background {
+                        BackgroundRefreshManager.scheduleNext()
+                    }
+                }
         }
         .modelContainer(container)
+        .backgroundTask(.appRefresh(BackgroundRefreshManager.taskIdentifier)) {
+            await BackgroundRefreshManager.performRefresh(client: appModel.client, container: container)
+        }
     }
 }

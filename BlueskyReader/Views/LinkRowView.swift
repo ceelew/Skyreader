@@ -3,6 +3,8 @@ import SwiftUI
 struct LinkRowView: View {
     let item: LinkItem
 
+    @AppStorage("showPostText") private var showPostText: Bool = true
+
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(item.headline)
@@ -16,7 +18,7 @@ struct LinkRowView: View {
                 .foregroundStyle(.secondary)
                 .lineLimit(2)
 
-            if let postText = item.postText, !postText.isEmpty {
+            if showPostText, let postText = item.postText, !postText.isEmpty {
                 Text(postText)
                     .font(.footnote)
                     .foregroundStyle(.tertiary)
