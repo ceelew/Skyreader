@@ -1,0 +1,391 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		04882D858E83049B7C45C218 /* LinkItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C02A75EFAED02C5CE9E34E /* LinkItem.swift */; };
+		0B2A5B0202B19640D01BDA71 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE2BD7BEC59F9D54C3654616 /* AppModel.swift */; };
+		168BB27824E1EDB154BFA405 /* IngestState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 736D2E66F2D46E934758157E /* IngestState.swift */; };
+		4922417DEB169C538174F705 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C5729E8BCD86FDA67A50FF3A /* Assets.xcassets */; };
+		6CF67FB471901C5FB589002C /* BlueskyReaderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F2F74B17400F77827DD216E /* BlueskyReaderApp.swift */; };
+		8EC32240E0F54C24C79F1372 /* ATProtoModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0E6F9D7D1140955E2299618 /* ATProtoModels.swift */; };
+		A11FF7B57AAF2E1639A5ACA9 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DB94B880EC5109313B74C90 /* RootView.swift */; };
+		ABAAFB225FE44C349190EFDB /* ATProtoClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F487299BBCC853421FCAFDF2 /* ATProtoClient.swift */; };
+		C0A7EA56C1227FFE119AE808 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A69992EDD3BA1BC515BBD883 /* KeychainStore.swift */; };
+		C1DD7504C0BD57440AEC3EF6 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43A1FC8D85FE22C539616103 /* LoginView.swift */; };
+		C6EAC2FF14AA028606CD55DF /* ReadingListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86819AB2830ABE741C5F5FD5 /* ReadingListView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0B6827B254C263307B0732DC /* BlueskyReader.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BlueskyReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		43A1FC8D85FE22C539616103 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		6F2F74B17400F77827DD216E /* BlueskyReaderApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlueskyReaderApp.swift; sourceTree = "<group>"; };
+		70C02A75EFAED02C5CE9E34E /* LinkItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkItem.swift; sourceTree = "<group>"; };
+		736D2E66F2D46E934758157E /* IngestState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngestState.swift; sourceTree = "<group>"; };
+		7DB94B880EC5109313B74C90 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		86819AB2830ABE741C5F5FD5 /* ReadingListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingListView.swift; sourceTree = "<group>"; };
+		A69992EDD3BA1BC515BBD883 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
+		A80A2D46D8EBB64BC8E86290 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		C5729E8BCD86FDA67A50FF3A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		D0E6F9D7D1140955E2299618 /* ATProtoModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ATProtoModels.swift; sourceTree = "<group>"; };
+		DE2BD7BEC59F9D54C3654616 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		F487299BBCC853421FCAFDF2 /* ATProtoClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ATProtoClient.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		1E5706F654CC93050AD3F1D7 = {
+			isa = PBXGroup;
+			children = (
+				6A5F2CBCF76CB52E299FB375 /* BlueskyReader */,
+				518061C89663F05FB2F73AF5 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		290572E0A152BDA83461D260 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				6F2F74B17400F77827DD216E /* BlueskyReaderApp.swift */,
+				7DB94B880EC5109313B74C90 /* RootView.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		518061C89663F05FB2F73AF5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0B6827B254C263307B0732DC /* BlueskyReader.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6A5F2CBCF76CB52E299FB375 /* BlueskyReader */ = {
+			isa = PBXGroup;
+			children = (
+				290572E0A152BDA83461D260 /* App */,
+				C247E1E1A55D0373EB71C8A4 /* Models */,
+				9281F888A6AED282A1850985 /* Networking */,
+				90981128C3FA2C59FC2B8241 /* Resources */,
+				8E5C33382F0C05D810F0DA5B /* ViewModels */,
+				A12FDD6B874084EDACFF6530 /* Views */,
+			);
+			path = BlueskyReader;
+			sourceTree = "<group>";
+		};
+		8E5C33382F0C05D810F0DA5B /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				DE2BD7BEC59F9D54C3654616 /* AppModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		90981128C3FA2C59FC2B8241 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				C5729E8BCD86FDA67A50FF3A /* Assets.xcassets */,
+				A80A2D46D8EBB64BC8E86290 /* Info.plist */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		9281F888A6AED282A1850985 /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				F487299BBCC853421FCAFDF2 /* ATProtoClient.swift */,
+				D0E6F9D7D1140955E2299618 /* ATProtoModels.swift */,
+				A69992EDD3BA1BC515BBD883 /* KeychainStore.swift */,
+			);
+			path = Networking;
+			sourceTree = "<group>";
+		};
+		A12FDD6B874084EDACFF6530 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				43A1FC8D85FE22C539616103 /* LoginView.swift */,
+				86819AB2830ABE741C5F5FD5 /* ReadingListView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		C247E1E1A55D0373EB71C8A4 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				736D2E66F2D46E934758157E /* IngestState.swift */,
+				70C02A75EFAED02C5CE9E34E /* LinkItem.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1B835B920A8135D1F643667B /* BlueskyReader */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AD5516BF55B9F7CA5381645B /* Build configuration list for PBXNativeTarget "BlueskyReader" */;
+			buildPhases = (
+				1279E5F71216461AA7327AD5 /* Sources */,
+				2A9A76F28CA6CE5DF5A34190 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BlueskyReader;
+			packageProductDependencies = (
+			);
+			productName = BlueskyReader;
+			productReference = 0B6827B254C263307B0732DC /* BlueskyReader.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		9EF538A15C8B32940B9AC6F5 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					1B835B920A8135D1F643667B = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 4DD6564B170DEC0395FA70E1 /* Build configuration list for PBXProject "BlueskyReader" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 1E5706F654CC93050AD3F1D7;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 518061C89663F05FB2F73AF5 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1B835B920A8135D1F643667B /* BlueskyReader */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		2A9A76F28CA6CE5DF5A34190 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4922417DEB169C538174F705 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1279E5F71216461AA7327AD5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ABAAFB225FE44C349190EFDB /* ATProtoClient.swift in Sources */,
+				8EC32240E0F54C24C79F1372 /* ATProtoModels.swift in Sources */,
+				0B2A5B0202B19640D01BDA71 /* AppModel.swift in Sources */,
+				6CF67FB471901C5FB589002C /* BlueskyReaderApp.swift in Sources */,
+				168BB27824E1EDB154BFA405 /* IngestState.swift in Sources */,
+				C0A7EA56C1227FFE119AE808 /* KeychainStore.swift in Sources */,
+				04882D858E83049B7C45C218 /* LinkItem.swift in Sources */,
+				C1DD7504C0BD57440AEC3EF6 /* LoginView.swift in Sources */,
+				C6EAC2FF14AA028606CD55DF /* ReadingListView.swift in Sources */,
+				A11FF7B57AAF2E1639A5ACA9 /* RootView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		75162CB535604846FBA751F8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = BlueskyReader/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.coreylewis.BlueskyReader;
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		B1156B53CD37B9783762C618 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.1;
+			};
+			name = Release;
+		};
+		B4397CE9C4BEA0C641049A17 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = BlueskyReader/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.coreylewis.BlueskyReader;
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		F0C9FB78B667597DA0376463 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.1;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4DD6564B170DEC0395FA70E1 /* Build configuration list for PBXProject "BlueskyReader" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F0C9FB78B667597DA0376463 /* Debug */,
+				B1156B53CD37B9783762C618 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		AD5516BF55B9F7CA5381645B /* Build configuration list for PBXNativeTarget "BlueskyReader" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				75162CB535604846FBA751F8 /* Debug */,
+				B4397CE9C4BEA0C641049A17 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 9EF538A15C8B32940B9AC6F5 /* Project object */;
+}
