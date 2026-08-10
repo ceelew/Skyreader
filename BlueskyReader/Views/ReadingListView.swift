@@ -5,7 +5,6 @@ struct ReadingListView: View {
     @Environment(AppModel.self) private var appModel
     @Environment(\.modelContext) private var modelContext
     @Environment(\.scenePhase) private var scenePhase
-    @Environment(\.openURL) private var openURL
     @Query(sort: \LinkItem.appearedAt, order: .reverse) private var items: [LinkItem]
 
     @AppStorage("hideReadItems") private var hideReadItems: Bool = false
@@ -32,8 +31,28 @@ struct ReadingListView: View {
         }
     }
 
+    /// Belt-and-suspenders duplicate filter: two `LinkItem`s can end up with
+    /// different `normalizedURL`s for the same underlying article (e.g. a
+    /// shortener that failed to resolve on one share but not another). Since
+    /// items are already sorted newest-first, keep the first (newest) occurrence
+    /// of each resolved headline and drop the rest. Placeholder headlines
+    /// (unresolved — just the bare domain) are left alone, since many distinct
+    /// articles from the same domain would otherwise collide on that text.
+    private var deduplicatedItems: [LinkItem] {
+        var seenHeadlines = Set<String>()
+        var result: [LinkItem] = []
+        for item in filteredItems {
+            if item.headlineResolved {
+                let key = item.headline.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+                guard seenHeadlines.insert(key).inserted else { continue }
+            }
+            result.append(item)
+        }
+        return result
+    }
+
     private var sections: [DaySection] {
-        let grouped = Dictionary(grouping: filteredItems) { DateGrouping.dayKey(for: $0.appearedAt) }
+        let grouped = Dictionary(grouping: deduplicatedItems) { DateGrouping.dayKey(for: $0.appearedAt) }
         return grouped.keys.sorted(by: >).map { key in
             DaySection(id: key, label: DateGrouping.sectionLabel(for: key), items: grouped[key] ?? [])
         }
@@ -57,7 +76,7 @@ struct ReadingListView: View {
                 .padding(.horizontal)
                 .padding(.top, 8)
 
-                if filteredItems.isEmpty && !appModel.isRefreshing {
+                if deduplicatedItems.isEmpty && !appModel.isRefreshing {
                     ContentUnavailableView(
                         emptyTitle,
                         systemImage: emptyIcon,
@@ -89,14 +108,14 @@ struct ReadingListView: View {
                                             .tint(.yellow)
                                         }
                                         .swipeActions(edge: .leading, allowsFullSwipe: false) {
-                                            if let bskyURL = ATProtoURI.bskyAppURL(fromPostURI: item.postURI) {
-                                                Button {
-                                                    openURL(bskyURL)
-                                                } label: {
-                                                    Label("Open Post", systemImage: "at")
-                                                }
-                                                .tint(.indigo)
+                                            Button {
+                                                item.isSaved = true
+                                                try? modelContext.save()
+                                            } label: {
+                                                Label("Save Article", systemImage: "bookmark.fill")
                                             }
+                                            .tint(.green)
+
                                             if let url = URL(string: item.originalURL) {
                                                 Button {
                                                     shareURL = IdentifiableURL(url: url)
