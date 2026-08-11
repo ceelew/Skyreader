@@ -12,7 +12,6 @@ final class AppModel {
     var isAuthenticated: Bool = false
     var currentHandle: String?
     var isRefreshing: Bool = false
-    var lastError: String?
     var isOffline: Bool = false
     var lastRefreshNewItemCount: Int?
     var lastRefreshDate: Date?
@@ -28,7 +27,6 @@ final class AppModel {
     func refreshTimeline(context: ModelContext) async {
         guard isAuthenticated, !isRefreshing else { return }
         isRefreshing = true
-        lastError = nil
         defer { isRefreshing = false }
 
         do {
@@ -38,7 +36,6 @@ final class AppModel {
             isOffline = false
             Task { await headlineResolver.resolveUnresolvedHeadlines(context: context) }
         } catch {
-            lastError = error.localizedDescription
             if let urlError = (error as? ATProtoError), case .network = urlError {
                 isOffline = true
             }
@@ -60,15 +57,14 @@ final class AppModel {
         currentHandle = await client.handle
     }
 
-    func login(handle: String, appPassword: String) async {
-        lastError = nil
+    func login(handle: String, appPassword: String) async throws {
         do {
             try await client.login(handle: handle, appPassword: appPassword)
             isAuthenticated = true
             currentHandle = await client.handle
         } catch {
-            lastError = error.localizedDescription
             isAuthenticated = false
+            throw error
         }
     }
 

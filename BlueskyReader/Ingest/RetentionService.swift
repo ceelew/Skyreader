@@ -17,4 +17,17 @@ enum RetentionService {
         }
         try? context.save()
     }
+
+    /// Manual "Remove read items now" action — deletes every read item
+    /// regardless of age. Saved items are never pruned.
+    static func pruneRead(context: ModelContext) {
+        let descriptor = FetchDescriptor<LinkItem>(
+            predicate: #Predicate<LinkItem> { !$0.isSaved && $0.isRead }
+        )
+        guard let candidates = try? context.fetch(descriptor) else { return }
+        for item in candidates {
+            context.delete(item)
+        }
+        try? context.save()
+    }
 }

@@ -1,103 +1,110 @@
+//  LoginView.swift
+//  Typographic form: no boxed fields, just labels over hairline-underlined text.
+
 import SwiftUI
 
 struct LoginView: View {
-    @Environment(AppModel.self) private var appModel
-
-    @State private var handle: String = ""
-    @State private var appPassword: String = ""
-    @State private var isSubmitting: Bool = false
-    @FocusState private var focusedField: Field?
-
-    private enum Field {
-        case handle, password
-    }
+    @State private var handle = ""
+    @State private var appPassword = ""
+    @State private var error: String?
+    @State private var isSigningIn = false
+    let signIn: (String, String) async throws -> Void
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Bluesky Reader")
-                        .font(.largeTitle.bold())
-                    Text("Sign in with your handle and an app password to build your reading list from your home timeline.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                .padding(.top, 32)
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 14) {
+                Text("Skyreader")
+                    .font(.system(size: 40, weight: .semibold, design: .serif))
+                    .tracking(-0.7)
+                    .foregroundStyle(Color.ink)
+                Text("Every link from your Bluesky timeline, as a reading list.")
+                    .font(.system(.title3, design: .serif))
+                    .foregroundStyle(Color.inkSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.top, 44)
 
-                VStack(alignment: .leading, spacing: 12) {
-                    TextField("Handle (e.g. corey.bsky.social)", text: $handle)
-                        .textContentType(.username)
+            VStack(alignment: .leading, spacing: 26) {
+                field("Handle", hasError: false) {
+                    TextField("you.bsky.social", text: $handle)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
-                        .focused($focusedField, equals: .handle)
-                        .submitLabel(.next)
-                        .onSubmit { focusedField = .password }
-                        .padding(12)
-                        .background(.fill.tertiary, in: RoundedRectangle(cornerRadius: 10))
-
-                    SecureField("App password", text: $appPassword)
+                        .textContentType(.username)
+                }
+                field("App password", hasError: error != nil) {
+                    SecureField("xxxx-xxxx-xxxx-xxxx", text: $appPassword)
                         .textContentType(.password)
-                        .focused($focusedField, equals: .password)
-                        .submitLabel(.go)
-                        .onSubmit { Task { await submit() } }
-                        .padding(12)
-                        .background(.fill.tertiary, in: RoundedRectangle(cornerRadius: 10))
                 }
-
-                if let error = appModel.lastError {
-                    Label(error, systemImage: "exclamationmark.triangle.fill")
+                if let error {
+                    Text(error)
                         .font(.footnote)
-                        .foregroundStyle(.red)
+                        .foregroundStyle(Color.destructive)
+                        .padding(.top, -14)
                 }
-
-                Button {
-                    Task { await submit() }
-                } label: {
-                    HStack {
-                        Spacer()
-                        if isSubmitting {
-                            ProgressView().tint(.white)
-                        } else {
-                            Text("Sign In")
-                        }
-                        Spacer()
-                    }
-                    .padding(.vertical, 12)
-                }
-                .buttonStyle(.borderedProminent)
-                .disabled(!canSubmit || isSubmitting)
-
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Need an app password?")
-                        .font(.footnote.bold())
-                    Text("Go to Bluesky → Settings → Privacy and Security → App Passwords to create one. Don't use your main account password.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                    Link("Open Bluesky settings", destination: URL(string: "https://bsky.app/settings/app-passwords")!)
-                        .font(.footnote)
-                }
-                .padding(.top, 8)
-
-                Spacer()
             }
-            .padding(.horizontal, 24)
+            .padding(.top, 36)
+
+            Button(action: attempt) {
+                Text(isSigningIn ? "Signing in…" : "Sign in")
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity, minHeight: 52)
+                    .background(RoundedRectangle(cornerRadius: 12).fill(Color.accentStrong))
+            }
+            .disabled(handle.isEmpty || appPassword.isEmpty || isSigningIn)
+            .padding(.top, 28)
+
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Skyreader signs in with an *app password*, not your account password. Bluesky lets you create one just for this app, and revoke it any time.")
+                    .font(.footnote)
+                    .foregroundStyle(Color.inkSecondary)
+                Link(destination: URL(string: "https://bsky.app/settings/app-passwords")!) {
+                    Text("Create an app password ↗")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(Color.accent)
+                }
+            }
+            .padding(.top, 22)
+
+            Spacer(minLength: Space.l)
+
+            VStack(alignment: .leading, spacing: 0) {
+                Rectangle().fill(Color.rule).frame(height: 0.5)
+                Text("Credentials are held in the iOS Keychain and sent only to bsky.social. Skyreader has no server.")
+                    .font(.caption)
+                    .foregroundStyle(Color.inkTertiary)
+                    .padding(.top, Space.l)
+            }
+        }
+        .padding(.horizontal, Space.xxl)
+        .padding(.bottom, 34)
+        .background(Color.paper)
+    }
+
+    @ViewBuilder
+    private func field<F: View>(_ label: String, hasError: Bool, @ViewBuilder content: () -> F) -> some View {
+        VStack(alignment: .leading, spacing: Space.m) {
+            Text(label)
+                .font(.caption.weight(.semibold))
+                .textCase(.uppercase)
+                .tracking(1.1)
+                .foregroundStyle(Color.inkTertiary)
+            content()
+                .font(.body)
+                .foregroundStyle(Color.ink)
+                .frame(minHeight: 24)
+            Rectangle()
+                .fill(hasError ? Color.destructive : Color.rule)
+                .frame(height: hasError ? 1 : 0.5)
         }
     }
 
-    private var canSubmit: Bool {
-        !handle.trimmingCharacters(in: .whitespaces).isEmpty && !appPassword.isEmpty
+    private func attempt() {
+        error = nil; isSigningIn = true
+        Task {
+            do { try await signIn(handle, appPassword) }
+            catch { self.error = "That handle and app password didn't match. Check for a stray space at the end." }
+            isSigningIn = false
+        }
     }
-
-    private func submit() async {
-        guard canSubmit else { return }
-        isSubmitting = true
-        defer { isSubmitting = false }
-        let cleanedHandle = handle.trimmingCharacters(in: .whitespaces)
-        await appModel.login(handle: cleanedHandle, appPassword: appPassword)
-    }
-}
-
-#Preview {
-    LoginView()
-        .environment(AppModel(client: ATProtoClient()))
 }
