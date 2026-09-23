@@ -21,7 +21,7 @@ targets:
       path: BlueskyReader/Resources/Info.plist
       properties:
         UILaunchScreen: {}
-        CFBundleDisplayName: Bluesky Reader
+        CFBundleDisplayName: Skyreader
         ITSAppUsesNonExemptEncryption: false
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait

@@ -21,7 +21,8 @@ enum HeadlinePageFetcher {
 
         var request = URLRequest(url: url)
         request.timeoutInterval = timeout
-        request.setValue("Mozilla/5.0 (compatible; BlueskyReaderApp/1.0; +https://bsky.app)", forHTTPHeaderField: "User-Agent")
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
+        request.setValue("Mozilla/5.0 (compatible; Skyreader/\(version); +https://github.com/ceelew/Skyreader)", forHTTPHeaderField: "User-Agent")
 
         do {
             let (asyncBytes, response) = try await session.bytes(for: request)
