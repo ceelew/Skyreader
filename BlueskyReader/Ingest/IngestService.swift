@@ -49,12 +49,25 @@ final class IngestService {
 
             let (itemsToProcess, reachedMarker) = Self.itemsBeforeCheckpoint(response.feed, marker: stopMarker)
 
-            for feedPost in itemsToProcess {
+            // Extract links for the whole page up front so shortener redirects can be
+            // resolved concurrently, rather than one at a time inside the insert loop.
+            let linksByPost = itemsToProcess.map { LinkExtractor.extract(from: $0) }
+            var shortenerURLs = Set<String>()
+            for links in linksByPost {
+                for link in links {
+                    if let host = URLNormalizer.host(of: link.originalURL), URLNormalizer.isShortener(host: host) {
+                        shortenerURLs.insert(link.originalURL)
+                    }
+                }
+            }
+            let resolvedRedirects = await Self.resolveRedirects(shortenerURLs)
+
+            for (index, feedPost) in itemsToProcess.enumerated() {
                 if newestKeyThisRefresh == nil {
                     newestKeyThisRefresh = feedPost.feedItemKey
                 }
-                for link in LinkExtractor.extract(from: feedPost) {
-                    newItemCount += try await ingest(link: link, existingURLs: &existingURLs, context: context)
+                for link in linksByPost[index] {
+                    newItemCount += try ingest(link: link, resolvedRedirects: resolvedRedirects, existingURLs: &existingURLs, context: context)
                 }
                 postsProcessed += 1
             }
@@ -103,13 +116,17 @@ final class IngestService {
         return (items, false)
     }
 
-    /// Resolves shorteners, normalizes, dedups, and inserts a single extracted link.
-    /// Returns 1 if a new item was inserted, 0 if it was a dup.
-    private func ingest(link: ExtractedLink, existingURLs: inout Set<String>, context: ModelContext) async throws -> Int {
-        var resolvedURL = link.originalURL
-        if let host = URLNormalizer.host(of: resolvedURL), URLNormalizer.isShortener(host: host) {
-            resolvedURL = await URLNormalizer.resolveRedirect(for: resolvedURL)
-        }
+    /// Normalizes, dedups, and inserts a single extracted link. Shortener redirects
+    /// are already resolved in `resolvedRedirects` (a map from original URL to final
+    /// URL, built concurrently before the insert loop). Returns 1 if a new item was
+    /// inserted, 0 if it was a dup.
+    private func ingest(
+        link: ExtractedLink,
+        resolvedRedirects: [String: String],
+        existingURLs: inout Set<String>,
+        context: ModelContext
+    ) throws -> Int {
+        let resolvedURL = resolvedRedirects[link.originalURL] ?? link.originalURL
 
         let normalized = URLNormalizer.normalize(resolvedURL)
         guard !existingURLs.contains(normalized) else { return 0 }
@@ -136,6 +153,36 @@ final class IngestService {
         )
         context.insert(item)
         return 1
+    }
+
+    /// Resolves a set of shortener URLs to their final URLs concurrently, at most
+    /// `maxConcurrent` in flight at a time, and returns a map from original to
+    /// resolved URL. `nonisolated` so the concurrent requests aren't serialized
+    /// through the main actor; resolution itself has no shared mutable state.
+    nonisolated static func resolveRedirects(
+        _ urls: Set<String>,
+        session: URLSession = .shared,
+        maxConcurrent: Int = 6
+    ) async -> [String: String] {
+        guard !urls.isEmpty else { return [:] }
+
+        var resolved: [String: String] = [:]
+        resolved.reserveCapacity(urls.count)
+        var pending = urls.makeIterator()
+
+        await withTaskGroup(of: (String, String).self) { group in
+            for _ in 0..<maxConcurrent {
+                guard let url = pending.next() else { break }
+                group.addTask { (url, await URLNormalizer.resolveRedirect(for: url, session: session)) }
+            }
+            while let (original, finalURL) = await group.next() {
+                resolved[original] = finalURL
+                if let next = pending.next() {
+                    group.addTask { (next, await URLNormalizer.resolveRedirect(for: next, session: session)) }
+                }
+            }
+        }
+        return resolved
     }
 
     private func fetchOrCreateIngestState(context: ModelContext) throws -> IngestState {
