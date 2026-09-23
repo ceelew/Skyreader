@@ -73,8 +73,10 @@ final class HeadlineResolver {
         let siteNameByHost = await Self.fetchAllSiteNames(jobs: jobs, maxConcurrent: maxConcurrent)
 
         for host in hosts {
+            // Only a page that actually loaded counts as tried; offline failures retry later.
+            guard let fetched = siteNameByHost[host], let result = fetched else { continue }
             siteNameCache.markTried(host: host)
-            guard let siteName = siteNameByHost[host] ?? nil, !siteName.isEmpty else { continue }
+            guard let siteName = result, !siteName.isEmpty else { continue }
             siteNameCache.record(siteName: siteName, forHost: host)
             for item in itemsByUnmappedHost[host] ?? [] {
                 item.publication = siteName
@@ -133,16 +135,17 @@ final class HeadlineResolver {
     }
 
     /// Runs site-name-only fetches with bounded concurrency off the main actor.
-    private static func fetchAllSiteNames(jobs: [HostJob], maxConcurrent: Int) async -> [String: String?] {
-        await withTaskGroup(of: (String, String?).self) { group in
+    /// Outer optional nil = fetch failed; inner nil = page loaded but had no og:site_name.
+    private static func fetchAllSiteNames(jobs: [HostJob], maxConcurrent: Int) async -> [String: String??] {
+        await withTaskGroup(of: (String, String??).self) { group in
             var iterator = jobs.makeIterator()
-            var results: [String: String?] = [:]
+            var results: [String: String??] = [:]
 
             func addNext() {
                 guard let job = iterator.next() else { return }
                 group.addTask {
                     let meta = await HeadlinePageFetcher.fetchMeta(for: job.urlString)
-                    return (job.host, meta?.siteName)
+                    return (job.host, meta.map { $0.siteName })
                 }
             }
 

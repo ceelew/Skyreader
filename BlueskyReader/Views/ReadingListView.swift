@@ -126,7 +126,7 @@ struct ReadingListView: View {
                     SettingsView(
                         handle: appModel.currentHandle ?? "unknown",
                         storedCount: items.count,
-                        signOut: { Task { await appModel.logout(context: modelContext) } },
+                        signOut: { Task { await appModel.signOut(context: modelContext) } },
                         pruneRead: { RetentionService.pruneRead(context: modelContext) }
                     )
                 } label: {

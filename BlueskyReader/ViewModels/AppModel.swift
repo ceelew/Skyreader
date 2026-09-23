@@ -58,7 +58,8 @@ final class AppModel {
             isOffline = true
 
         case .invalidCredentials, .notAuthenticated:
-            await logout(context: context)
+            // Keep the reading list: the same account usually signs straight back in.
+            await endSession()
             loginMessage = "Your Bluesky session ended. Sign in again."
 
         case .rateLimited(let retryAfter):
@@ -90,11 +91,18 @@ final class AppModel {
         let authed = await client.isAuthenticated
         isAuthenticated = authed
         currentHandle = await client.handle
+        // Installs from before ownership tracking: adopt existing data for this account.
+        if authed, dataOwnerDID == nil { dataOwnerDID = await client.did }
     }
 
-    func login(handle: String, appPassword: String) async throws {
+    func login(handle: String, appPassword: String, context: ModelContext) async throws {
         do {
             try await client.login(handle: handle, appPassword: appPassword)
+            let did = await client.did
+            if let owner = dataOwnerDID, owner != did {
+                clearAccountData(context: context)
+            }
+            dataOwnerDID = did
             isAuthenticated = true
             currentHandle = await client.handle
             loginMessage = nil
@@ -104,20 +112,36 @@ final class AppModel {
         }
     }
 
-    /// Signs out and clears this device's account data (saved articles, ingest
-    /// checkpoint). `SiteNameCache` is host metadata, not account data, so it's left
-    /// alone.
-    func logout(context: ModelContext) async {
+    /// Explicit sign-out from Settings: ends the session and clears this device's
+    /// account data (articles, ingest checkpoint). `SiteNameCache` is host metadata,
+    /// not account data, so it's left alone.
+    func signOut(context: ModelContext) async {
+        clearAccountData(context: context)
+        dataOwnerDID = nil
+        await endSession()
+    }
+
+    /// Drops credentials without touching stored articles — used when Bluesky
+    /// rejects the session, so re-signing in as the same account keeps the list.
+    func endSession() async {
+        await client.logout()
+        isAuthenticated = false
+        currentHandle = nil
+    }
+
+    private func clearAccountData(context: ModelContext) {
         do {
             try context.delete(model: LinkItem.self)
             try context.delete(model: IngestState.self)
             try context.save()
         } catch {
-            // Best-effort: still proceed to clear the session below even if the
-            // local delete failed.
+            // Best-effort: a failed local delete shouldn't block signing out.
         }
-        await client.logout()
-        isAuthenticated = false
-        currentHandle = nil
+    }
+
+    /// DID of the account whose articles are stored locally.
+    private var dataOwnerDID: String? {
+        get { UserDefaults.standard.string(forKey: "dataOwnerDID") }
+        set { UserDefaults.standard.set(newValue, forKey: "dataOwnerDID") }
     }
 }
