@@ -68,9 +68,9 @@ struct SettingsView: View {
                     .padding(.top, 10)
 
                 HStack {
-                    Text("Skyreader 1.0 (1)")
+                    Text("Skyreader \(Bundle.main.appVersionString)")
                     Spacer()
-                    Link("Source ↗", destination: URL(string: "https://github.com/")!)
+                    Link("Source ↗", destination: URL(string: "https://github.com/ceelew/Skyreader")!)
                         .foregroundStyle(Color.accentStrong)
                 }
                 .font(.caption)
