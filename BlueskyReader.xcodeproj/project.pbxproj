@@ -21,6 +21,7 @@
 		386F3300A84D3A2155C165CD /* LinkExtractorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD9C489ED596775A6BE0633 /* LinkExtractorTests.swift */; };
 		3C1F50BE353E5F1281A700E2 /* repost.json in Resources */ = {isa = PBXBuildFile; fileRef = 71A1CC1E67D4B8659E7C8212 /* repost.json */; };
 		3D141984291C622FC186A70B /* HTMLMetaParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1663A648097B834FC952198D /* HTMLMetaParserTests.swift */; };
+		439E0577F80159E6745FCCAC /* ArticleDeduplicatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EF9447AAA564F621A63F861 /* ArticleDeduplicatorTests.swift */; };
 		4922417DEB169C538174F705 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C5729E8BCD86FDA67A50FF3A /* Assets.xcassets */; };
 		4CB6107D22B4195A22638FC9 /* LinkExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 978E5CD58EE4324E3AEB43E4 /* LinkExtractor.swift */; };
 		4D89284601DF562557301A41 /* no_links.json in Resources */ = {isa = PBXBuildFile; fileRef = 76A663770CEB185148EE60B1 /* no_links.json */; };
@@ -39,6 +40,7 @@
 		ABAAFB225FE44C349190EFDB /* ATProtoClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F487299BBCC853421FCAFDF2 /* ATProtoClient.swift */; };
 		C0A7EA56C1227FFE119AE808 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A69992EDD3BA1BC515BBD883 /* KeychainStore.swift */; };
 		C1DD7504C0BD57440AEC3EF6 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43A1FC8D85FE22C539616103 /* LoginView.swift */; };
+		C3242E3673C0AB3766EA722F /* ArticleDeduplicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69B34E9068CD963D88A949EC /* ArticleDeduplicator.swift */; };
 		C626C95017A3973B36D79319 /* URLNormalizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0C6D4A024344C33B3DCDE4B /* URLNormalizerTests.swift */; };
 		C6EAC2FF14AA028606CD55DF /* ReadingListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86819AB2830ABE741C5F5FD5 /* ReadingListView.swift */; };
 		CC4ABE480A83F79E66E8993E /* facet_only_link.json in Resources */ = {isa = PBXBuildFile; fileRef = 76D435ACDF3C89EE6316FAD4 /* facet_only_link.json */; };
@@ -77,6 +79,7 @@
 		561F0D0B81ADEECC62A3CBCA /* URLNormalizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLNormalizer.swift; sourceTree = "<group>"; };
 		562C315CE85EF3B9A900D291 /* BlueskyReaderTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BlueskyReaderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D16A97672452FBD2316448A /* IngestCheckpointTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngestCheckpointTests.swift; sourceTree = "<group>"; };
+		69B34E9068CD963D88A949EC /* ArticleDeduplicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleDeduplicator.swift; sourceTree = "<group>"; };
 		6F2F74B17400F77827DD216E /* BlueskyReaderApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlueskyReaderApp.swift; sourceTree = "<group>"; };
 		7003A625B1FBAD910675327B /* RetentionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetentionService.swift; sourceTree = "<group>"; };
 		70C02A75EFAED02C5CE9E34E /* LinkItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkItem.swift; sourceTree = "<group>"; };
@@ -86,6 +89,7 @@
 		76D435ACDF3C89EE6316FAD4 /* facet_only_link.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = facet_only_link.json; sourceTree = "<group>"; };
 		7D41DC561E60785DCB6488AA /* FixtureLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureLoader.swift; sourceTree = "<group>"; };
 		7DB94B880EC5109313B74C90 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		7EF9447AAA564F621A63F861 /* ArticleDeduplicatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleDeduplicatorTests.swift; sourceTree = "<group>"; };
 		7F2AA53236FCBB219D3D3D26 /* DateGroupingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateGroupingTests.swift; sourceTree = "<group>"; };
 		8450A84064A8CA5997C35B0D /* non_http_link_skipped.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = non_http_link_skipped.json; sourceTree = "<group>"; };
 		86819AB2830ABE741C5F5FD5 /* ReadingListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingListView.swift; sourceTree = "<group>"; };
@@ -165,6 +169,7 @@
 		77511A5157469FC8E7214051 /* Ingest */ = {
 			isa = PBXGroup;
 			children = (
+				69B34E9068CD963D88A949EC /* ArticleDeduplicator.swift */,
 				9E18BE484565EA5E0C1963E7 /* ATProtoURI.swift */,
 				910970FFE5363CAAF1C12D80 /* BackgroundRefreshManager.swift */,
 				86FFE1CA6140B3CA5084FEFB /* DateGrouping.swift */,
@@ -246,6 +251,7 @@
 		D87881928EEB3850982E11EF /* BlueskyReaderTests */ = {
 			isa = PBXGroup;
 			children = (
+				7EF9447AAA564F621A63F861 /* ArticleDeduplicatorTests.swift */,
 				2E2BDD345E348786DD224366 /* ATProtoClientStatusTests.swift */,
 				7F2AA53236FCBB219D3D3D26 /* DateGroupingTests.swift */,
 				A5084A78DAAF166958AA41A3 /* DateParsingTests.swift */,
@@ -373,6 +379,7 @@
 				8EC32240E0F54C24C79F1372 /* ATProtoModels.swift in Sources */,
 				1183726932631B35CE9F8CAE /* ATProtoURI.swift in Sources */,
 				0B2A5B0202B19640D01BDA71 /* AppModel.swift in Sources */,
+				C3242E3673C0AB3766EA722F /* ArticleDeduplicator.swift in Sources */,
 				810DB27333E71F27457E8FF8 /* ArticleRow.swift in Sources */,
 				87C3F6AC868E1CB6E2CA6CD5 /* BackgroundRefreshManager.swift in Sources */,
 				6CF67FB471901C5FB589002C /* BlueskyReaderApp.swift in Sources */,
@@ -403,6 +410,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0DDA2278AB62A133C078D988 /* ATProtoClientStatusTests.swift in Sources */,
+				439E0577F80159E6745FCCAC /* ArticleDeduplicatorTests.swift in Sources */,
 				237719CC32015886A04EAFF6 /* DateGroupingTests.swift in Sources */,
 				8460407D69D10D17FD06BA4D /* DateParsingTests.swift in Sources */,
 				98412B79687D4C0C83D6D80F /* FixtureLoader.swift in Sources */,

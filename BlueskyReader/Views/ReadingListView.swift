@@ -236,20 +236,9 @@ struct ReadingListView: View {
 
     /// Two `LinkItem`s can end up representing the same article under different
     /// normalized URLs (e.g. a shortener that resolved on one share but not another).
-    /// Keep the newest occurrence of each resolved headline; unresolved placeholders
-    /// (bare host) are left alone since many distinct articles from one domain would
-    /// otherwise collide.
+    /// See `ArticleDeduplicator` for the keying/placeholder rules.
     private var deduplicatedItems: [LinkItem] {
-        var seenHeadlines = Set<String>()
-        var result: [LinkItem] = []
-        for item in filteredItems {
-            if item.headlineResolved {
-                let key = item.headline.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-                guard seenHeadlines.insert(key).inserted else { continue }
-            }
-            result.append(item)
-        }
-        return result
+        ArticleDeduplicator.dedupe(filteredItems)
     }
 
     private var days: [DaySection] {
