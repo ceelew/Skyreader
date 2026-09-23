@@ -8,7 +8,7 @@ options:
 settings:
   base:
     SWIFT_VERSION: 5.10
-    DEVELOPMENT_TEAM: ""
+    DEVELOPMENT_TEAM: XYTDY6K9PH
     CODE_SIGN_STYLE: Automatic
 
 targets:
