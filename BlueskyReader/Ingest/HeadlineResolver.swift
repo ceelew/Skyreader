@@ -9,12 +9,20 @@ final class HeadlineResolver {
     private let maxConcurrent: Int
     private let maxAttempts: Int
 
+    /// Guards against overlapping runs (e.g. two quick refreshes in a row) double-fetching
+    /// the same pages.
+    private var isRunning = false
+
     init(maxConcurrent: Int = 4, maxAttempts: Int = 2) {
         self.maxConcurrent = maxConcurrent
         self.maxAttempts = maxAttempts
     }
 
     func resolveUnresolvedHeadlines(context: ModelContext) async {
+        guard !isRunning else { return }
+        isRunning = true
+        defer { isRunning = false }
+
         let descriptor = FetchDescriptor<LinkItem>(
             predicate: #Predicate<LinkItem> { $0.headlineResolved == false }
         )
@@ -55,12 +63,18 @@ final class HeadlineResolver {
     }
 
     private func apply(meta: HTMLMetaParser.PageMeta?, to item: LinkItem) {
-        if let title = meta?.title, !title.isEmpty {
-            item.headline = title
+        let fetchedTitle = meta?.title?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let isJunkTitle = fetchedTitle.map { ArticleDeduplicator.junkTitles.contains($0.lowercased()) } ?? false
+
+        if let fetchedTitle, !fetchedTitle.isEmpty, !isJunkTitle {
+            item.headline = fetchedTitle
             item.headlineResolved = true
         } else {
             item.headlineFetchAttempts += 1
             if item.headlineFetchAttempts >= maxAttempts {
+                // Give up: a clean "host/path…" beats leaving the bare host (or a junk
+                // title like "Just a moment...") as the permanent headline.
+                item.headline = URLNormalizer.fallbackHeadline(for: item.originalURL)
                 item.headlineResolved = true
             }
         }

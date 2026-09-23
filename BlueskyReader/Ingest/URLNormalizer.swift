@@ -83,4 +83,36 @@ enum URLNormalizer {
         guard let url = URL(string: urlString), let host = url.host else { return nil }
         return strippingPrefixes(from: host.lowercased())
     }
+
+    /// A readable fallback headline for a link whose page title could never be
+    /// resolved: "host/first/path/components", truncated to ~`maxLength` chars with
+    /// a trailing ellipsis when something had to be cut.
+    static func fallbackHeadline(for urlString: String, maxLength: Int = 60) -> String {
+        let base: String
+        let pathComponents: [String]
+        if let url = URL(string: urlString), let host = url.host, !host.isEmpty {
+            base = strippingPrefixes(from: host.lowercased())
+            pathComponents = url.pathComponents.filter { $0 != "/" && !$0.isEmpty }
+        } else {
+            base = urlString.trimmingCharacters(in: .whitespacesAndNewlines)
+            pathComponents = []
+        }
+
+        var result = base
+        var pathWasTruncated = false
+        for component in pathComponents {
+            let candidate = result + "/" + component
+            if candidate.count > maxLength {
+                pathWasTruncated = true
+                break
+            }
+            result = candidate
+        }
+
+        let needsEllipsis = pathWasTruncated || result.count > maxLength
+        if result.count > maxLength {
+            result = String(result.prefix(max(0, maxLength - 1)))
+        }
+        return needsEllipsis ? result + "…" : result
+    }
 }

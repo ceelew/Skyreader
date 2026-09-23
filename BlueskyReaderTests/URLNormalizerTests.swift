@@ -108,4 +108,39 @@ final class URLNormalizerTests: XCTestCase {
     func testIsShortenerFalseForRegularHost() {
         XCTAssertFalse(URLNormalizer.isShortener(host: "nytimes.com"))
     }
+
+    // MARK: - fallbackHeadline
+
+    func testFallbackHeadlineJoinsHostAndPath() {
+        let result = URLNormalizer.fallbackHeadline(for: "https://www.example.com/blog/some-post-slug")
+        XCTAssertEqual(result, "example.com/blog/some-post-slug")
+    }
+
+    func testFallbackHeadlineHostOnlyWhenNoPath() {
+        let result = URLNormalizer.fallbackHeadline(for: "https://example.com")
+        XCTAssertEqual(result, "example.com")
+    }
+
+    func testFallbackHeadlineTruncatesLongPathWithEllipsis() {
+        let longSlug = String(repeating: "a", count: 100)
+        let result = URLNormalizer.fallbackHeadline(for: "https://example.com/blog/\(longSlug)", maxLength: 60)
+        XCTAssertLessThanOrEqual(result.count, 60)
+        XCTAssertTrue(result.hasSuffix("…"))
+        XCTAssertTrue(result.hasPrefix("example.com/blog"))
+    }
+
+    func testFallbackHeadlineDoesNotAddEllipsisWhenEverythingFits() {
+        let result = URLNormalizer.fallbackHeadline(for: "https://example.com/short/path", maxLength: 60)
+        XCTAssertFalse(result.hasSuffix("…"))
+    }
+
+    func testFallbackHeadlineIncludesOnlyComponentsThatFit() {
+        // "example.com/aaaa...a" (55 chars) fits under 60, but adding "/second" would
+        // push past 60, so the result should stop after the first component and end
+        // with an ellipsis rather than silently dropping the marker.
+        let firstComponent = String(repeating: "a", count: 40)
+        let result = URLNormalizer.fallbackHeadline(for: "https://example.com/\(firstComponent)/second-component", maxLength: 60)
+        XCTAssertTrue(result.hasSuffix("…"))
+        XCTAssertFalse(result.contains("second-component"))
+    }
 }
