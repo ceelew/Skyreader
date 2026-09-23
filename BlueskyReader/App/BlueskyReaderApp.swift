@@ -10,7 +10,15 @@ struct BlueskyReaderApp: App {
 
     init() {
         do {
-            container = try ModelContainer(for: LinkItem.self, IngestState.self)
+            var inMemory = false
+            #if DEBUG
+            // Sample data never touches the on-disk store, so it can't leak into a real list.
+            inMemory = SampleData.isRequested
+            #endif
+            container = try ModelContainer(
+                for: LinkItem.self, IngestState.self,
+                configurations: ModelConfiguration(isStoredInMemoryOnly: inMemory)
+            )
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")
         }
