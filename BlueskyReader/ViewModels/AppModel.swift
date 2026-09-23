@@ -30,8 +30,11 @@ final class AppModel {
         self.headlineResolver = HeadlineResolver()
     }
 
+    /// DEBUG sample-data mode: UI runs against seeded rows with no network calls.
+    var isSampleDataMode = false
+
     func refreshTimeline(context: ModelContext) async {
-        guard isAuthenticated, !isRefreshing else { return }
+        guard isAuthenticated, !isRefreshing, !isSampleDataMode else { return }
         isRefreshing = true
         defer { isRefreshing = false }
 

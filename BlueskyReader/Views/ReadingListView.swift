@@ -115,11 +115,15 @@ struct ReadingListView: View {
                         .font(.masthead)
                         .tracking(-0.5)
                         .foregroundStyle(Color.ink)
+                    // At accessibility sizes the date wraps to several lines of a pinned
+                    // header; drop it there so the list keeps most of the screen.
+                    if !typeSize.isAccessibilitySize {
                     Text(dateLine)
                         .font(.caption).fontWeight(.semibold)
                         .textCase(.uppercase)
                         .tracking(1.1)
                         .foregroundStyle(Color.inkTertiary)
+                    }
                 }
                 Spacer()
                 NavigationLink {

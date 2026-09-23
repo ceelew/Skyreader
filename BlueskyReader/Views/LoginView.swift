@@ -12,6 +12,18 @@ struct LoginView: View {
     var message: String? = nil
 
     var body: some View {
+        // Scrolls so accessibility text sizes never clip; the min-height frame keeps the
+        // footer pinned to the bottom at regular sizes.
+        GeometryReader { geo in
+            ScrollView {
+                form.frame(minHeight: geo.size.height)
+            }
+            .scrollBounceBehavior(.basedOnSize)
+        }
+        .background(Color.paper)
+    }
+
+    private var form: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: 14) {
                 Text("Skyreader")
@@ -84,7 +96,6 @@ struct LoginView: View {
         }
         .padding(.horizontal, Space.xxl)
         .padding(.bottom, 34)
-        .background(Color.paper)
     }
 
     @ViewBuilder
@@ -109,7 +120,13 @@ struct LoginView: View {
         error = nil; isSigningIn = true
         Task {
             do { try await signIn(handle, appPassword) }
-            catch { self.error = "That handle and app password didn't match. Check for a stray space at the end." }
+            catch ATProtoError.invalidCredentials {
+                self.error = "That handle and app password didn't match. Check for a stray space at the end."
+            } catch ATProtoError.network {
+                self.error = "Couldn't reach Bluesky. Check your connection and try again."
+            } catch {
+                self.error = error.localizedDescription
+            }
             isSigningIn = false
         }
     }

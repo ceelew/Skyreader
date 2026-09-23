@@ -19,6 +19,16 @@ struct RootView: View {
         }
         .task {
             guard !didRestoreSession else { return }
+            #if DEBUG
+            if SampleData.isRequested {
+                SampleData.seed(into: modelContext)
+                appModel.isSampleDataMode = true
+                appModel.isAuthenticated = true
+                appModel.currentHandle = "sample.bsky.social"
+                didRestoreSession = true
+                return
+            }
+            #endif
             await appModel.restoreSession()
             didRestoreSession = true
         }

@@ -20,10 +20,9 @@ struct ArticleRow: View {
                 .fixedSize(horizontal: false, vertical: true)   // never truncate a headline
 
             HStack(spacing: 7) {
-                Text(metaLine)
+                metaLine
                     .font(.meta)
                     .foregroundStyle(item.isRead ? Color.inkTertiary : Color.inkSecondary)
-                    .lineLimit(typeSize.isAccessibilitySize ? 2 : 1)
                 if item.isSaved {
                     Image(systemName: "bookmark.fill")
                         .font(.system(size: 11))
@@ -57,8 +56,21 @@ struct ArticleRow: View {
         .accessibilityLabel(a11yLabel)
     }
 
-    private var metaLine: String {
-        "\(item.publication) · shared by @\(item.sharedByHandle) · \(item.appearedAt.relativeShort)"
+    /// The sharer's handle gives way first so the time never gets truncated.
+    @ViewBuilder private var metaLine: some View {
+        if typeSize.isAccessibilitySize {
+            Text("\(item.publication) · shared by @\(item.sharedByHandle) · \(item.appearedAt.relativeShort)")
+                .lineLimit(3)
+        } else {
+            HStack(spacing: 0) {
+                Text("\(item.publication) · shared by @\(item.sharedByHandle)")
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                Text(" · \(item.appearedAt.relativeShort)")
+                    .lineLimit(1)
+                    .fixedSize()
+            }
+        }
     }
 
     /// Colour is never the only signal — VoiceOver says the state out loud.
@@ -67,7 +79,7 @@ struct ArticleRow: View {
         parts.append(item.isRead ? "Read." : "Unread.")
         if item.isSaved { parts.append("Saved.") }
         parts.append(item.headline)
-        parts.append(metaLine.replacingOccurrences(of: " · ", with: ", "))
+        parts.append("\(item.publication), shared by @\(item.sharedByHandle), \(item.appearedAt.relativeShort)")
         return parts.joined(separator: " ")
     }
 }
