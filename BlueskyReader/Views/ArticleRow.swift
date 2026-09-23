@@ -44,7 +44,7 @@ struct ArticleRow: View {
                     .fill(Color.accent)
                     .frame(width: 9, height: 9)
                     // Centred on the publication line (which sits below the 6pt top padding).
-                    .offset(x: -15, y: 10)
+                    .offset(x: -20, y: 10)   // centred in the 32pt row gutter
                     .accessibilityHidden(true)
             }
         }

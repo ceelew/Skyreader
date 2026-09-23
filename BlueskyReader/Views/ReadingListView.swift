@@ -44,10 +44,13 @@ struct ReadingListView: View {
                     statusRow(status)
                 }
                 ForEach(days) { day in
-                    Section(day.title) {
+                    Section {
                         ForEach(day.items) { item in
                             row(for: item)
                         }
+                    } header: {
+                        Text(day.title)
+                            .padding(.leading, Self.rowLeadingInset - 20)   // line up with row text
                     }
                 }
             }
@@ -83,6 +86,10 @@ struct ReadingListView: View {
 
     // MARK: rows
 
+    /// Wider than the default 20pt so the unread dot gets its own gutter
+    /// instead of sitting against the screen edge.
+    static let rowLeadingInset: CGFloat = 32
+
     private func row(for item: LinkItem) -> some View {
         Button { openArticle(item) } label: {
             ArticleRow(item: item, showCommentary: showCommentary)
@@ -105,6 +112,7 @@ struct ReadingListView: View {
                     .tint(.gray)
             }
         }
+        .listRowInsets(EdgeInsets(top: 10, leading: Self.rowLeadingInset, bottom: 10, trailing: 20))
         .contextMenu {
             Button { toggleRead(item) } label: {
                 Label(item.isRead ? "Mark as Unread" : "Mark as Read",
