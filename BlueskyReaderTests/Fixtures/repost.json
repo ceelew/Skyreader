@@ -1,0 +1,33 @@
+{
+  "post": {
+    "uri": "at://did:plc:author6/app.bsky.feed.post/6",
+    "cid": "cid6",
+    "author": {
+      "did": "did:plc:author6",
+      "handle": "frank.bsky.social",
+      "displayName": "Frank"
+    },
+    "record": {
+      "text": "Original post text",
+      "facets": []
+    },
+    "embed": {
+      "$type": "app.bsky.embed.external#view",
+      "external": {
+        "uri": "https://www.reuters.com/some-story",
+        "title": "Reposted Article",
+        "description": "desc"
+      }
+    },
+    "indexedAt": "2026-09-19T10:00:00.000Z"
+  },
+  "reason": {
+    "$type": "app.bsky.feed.defs#reasonRepost",
+    "by": {
+      "did": "did:plc:reposter1",
+      "handle": "grace.bsky.social",
+      "displayName": "Grace"
+    },
+    "indexedAt": "2026-09-21T09:30:00.000Z"
+  }
+}

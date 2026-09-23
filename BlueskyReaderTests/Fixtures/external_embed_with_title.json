@@ -1,0 +1,24 @@
+{
+  "post": {
+    "uri": "at://did:plc:author1/app.bsky.feed.post/1",
+    "cid": "cid1",
+    "author": {
+      "did": "did:plc:author1",
+      "handle": "alice.bsky.social",
+      "displayName": "Alice"
+    },
+    "record": {
+      "text": "Check this out",
+      "facets": []
+    },
+    "embed": {
+      "$type": "app.bsky.embed.external#view",
+      "external": {
+        "uri": "https://www.nytimes.com/2026/09/20/some-article.html?utm_source=twitter",
+        "title": "Some Article Title",
+        "description": "A description"
+      }
+    },
+    "indexedAt": "2026-09-20T12:00:00.000Z"
+  }
+}

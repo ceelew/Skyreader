@@ -1,0 +1,16 @@
+{
+  "post": {
+    "uri": "at://did:plc:author7/app.bsky.feed.post/7",
+    "cid": "cid7",
+    "author": {
+      "did": "did:plc:author7",
+      "handle": "henry.bsky.social",
+      "displayName": "Henry"
+    },
+    "record": {
+      "text": "Just some thoughts, no links here.",
+      "facets": []
+    },
+    "indexedAt": "2026-09-20T17:00:00.000Z"
+  }
+}

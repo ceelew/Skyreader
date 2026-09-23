@@ -1,0 +1,27 @@
+{
+  "post": {
+    "uri": "at://did:plc:author2/app.bsky.feed.post/2",
+    "cid": "cid2",
+    "author": {
+      "did": "did:plc:author2",
+      "handle": "bob.bsky.social",
+      "displayName": "Bob"
+    },
+    "record": {
+      "text": "Quoting with media",
+      "facets": []
+    },
+    "embed": {
+      "$type": "app.bsky.embed.recordWithMedia#view",
+      "media": {
+        "$type": "app.bsky.embed.external#view",
+        "external": {
+          "uri": "https://www.theverge.com/2026/09/20/nested-external.html",
+          "title": "Nested External Title",
+          "description": "Nested description"
+        }
+      }
+    },
+    "indexedAt": "2026-09-20T13:00:00.000Z"
+  }
+}

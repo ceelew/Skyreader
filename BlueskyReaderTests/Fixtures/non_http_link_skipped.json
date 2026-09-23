@@ -1,0 +1,25 @@
+{
+  "post": {
+    "uri": "at://did:plc:author5/app.bsky.feed.post/5",
+    "cid": "cid5",
+    "author": {
+      "did": "did:plc:author5",
+      "handle": "erin.bsky.social",
+      "displayName": "Erin"
+    },
+    "record": {
+      "text": "Email me",
+      "facets": [
+        {
+          "features": [
+            {
+              "$type": "app.bsky.richtext.facet#link",
+              "uri": "mailto:erin@example.com"
+            }
+          ]
+        }
+      ]
+    },
+    "indexedAt": "2026-09-20T16:00:00.000Z"
+  }
+}

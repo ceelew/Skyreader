@@ -1,0 +1,25 @@
+{
+  "post": {
+    "uri": "at://did:plc:author4/app.bsky.feed.post/4",
+    "cid": "cid4",
+    "author": {
+      "did": "did:plc:author4",
+      "handle": "dave.bsky.social",
+      "displayName": "Dave"
+    },
+    "record": {
+      "text": "Check my other post",
+      "facets": [
+        {
+          "features": [
+            {
+              "$type": "app.bsky.richtext.facet#link",
+              "uri": "https://bsky.app/profile/dave.bsky.social/post/xyz"
+            }
+          ]
+        }
+      ]
+    },
+    "indexedAt": "2026-09-20T15:00:00.000Z"
+  }
+}

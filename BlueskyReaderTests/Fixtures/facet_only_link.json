@@ -1,0 +1,25 @@
+{
+  "post": {
+    "uri": "at://did:plc:author3/app.bsky.feed.post/3",
+    "cid": "cid3",
+    "author": {
+      "did": "did:plc:author3",
+      "handle": "carol.bsky.social",
+      "displayName": "Carol"
+    },
+    "record": {
+      "text": "Read this: https://www.wired.com/story/some-story/",
+      "facets": [
+        {
+          "features": [
+            {
+              "$type": "app.bsky.richtext.facet#link",
+              "uri": "https://www.wired.com/story/some-story/"
+            }
+          ]
+        }
+      ]
+    },
+    "indexedAt": "2026-09-20T14:00:00.000Z"
+  }
+}

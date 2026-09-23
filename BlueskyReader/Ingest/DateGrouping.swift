@@ -3,8 +3,9 @@ import Foundation
 enum DateGrouping {
     /// "Today" / "Yesterday" / "Friday, August 8" (adds year if not the current year).
     static func sectionLabel(for date: Date, calendar: Calendar = .current, now: Date = Date()) -> String {
-        if calendar.isDateInToday(date) { return "Today" }
-        if calendar.isDateInYesterday(date) { return "Yesterday" }
+        if calendar.isDate(date, inSameDayAs: now) { return "Today" }
+        if let yesterday = calendar.date(byAdding: .day, value: -1, to: now),
+           calendar.isDate(date, inSameDayAs: yesterday) { return "Yesterday" }
 
         let sameYear = calendar.component(.year, from: date) == calendar.component(.year, from: now)
         let formatter = DateFormatter()
