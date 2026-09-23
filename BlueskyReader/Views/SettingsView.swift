@@ -11,6 +11,7 @@ struct SettingsView: View {
     let storedCount: Int
     let signOut: () -> Void
     let pruneRead: () -> Void
+    @State private var showSignOutConfirmation = false
 
     var body: some View {
         ScrollView {
@@ -25,9 +26,18 @@ struct SettingsView: View {
                 header("Account")
                 row { Text("Signed in as"); Spacer(); Text("@\(handle)").foregroundStyle(Color.inkSecondary) }
                 divider(inset: true)
-                Button(action: signOut) {
+                Button { showSignOutConfirmation = true } label: {
                     row { Text("Sign out").foregroundStyle(Color.destructive); Spacer() }
-                }.buttonStyle(.plain)
+                }
+                .buttonStyle(.plain)
+                .confirmationDialog(
+                    "Sign out? Your reading list on this device will be cleared.",
+                    isPresented: $showSignOutConfirmation,
+                    titleVisibility: .visible
+                ) {
+                    Button("Sign Out", role: .destructive, action: signOut)
+                    Button("Cancel", role: .cancel) {}
+                }
                 divider()
 
                 header("Reading list")

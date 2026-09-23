@@ -43,11 +43,11 @@ final class AppModel {
             bannerMessage = nil
             Task { await headlineResolver.resolveUnresolvedHeadlines(context: context) }
         } catch {
-            await handleRefreshError(error)
+            await handleRefreshError(error, context: context)
         }
     }
 
-    private func handleRefreshError(_ error: Error) async {
+    private func handleRefreshError(_ error: Error, context: ModelContext) async {
         guard let atError = error as? ATProtoError else {
             bannerMessage = "Couldn't read the timeline response."
             return
@@ -58,7 +58,7 @@ final class AppModel {
             isOffline = true
 
         case .invalidCredentials, .notAuthenticated:
-            await logout()
+            await logout(context: context)
             loginMessage = "Your Bluesky session ended. Sign in again."
 
         case .rateLimited(let retryAfter):
@@ -104,7 +104,18 @@ final class AppModel {
         }
     }
 
-    func logout() async {
+    /// Signs out and clears this device's account data (saved articles, ingest
+    /// checkpoint). `SiteNameCache` is host metadata, not account data, so it's left
+    /// alone.
+    func logout(context: ModelContext) async {
+        do {
+            try context.delete(model: LinkItem.self)
+            try context.delete(model: IngestState.self)
+            try context.save()
+        } catch {
+            // Best-effort: still proceed to clear the session below even if the
+            // local delete failed.
+        }
         await client.logout()
         isAuthenticated = false
         currentHandle = nil
