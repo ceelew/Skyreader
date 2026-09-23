@@ -12,6 +12,12 @@ final class IngestService {
 
     struct RefreshResult {
         let newItemCount: Int
+        /// True if the scan hit the page/post cap before reaching the previous
+        /// checkpoint, meaning older items in this refresh window may not have been
+        /// scanned. The checkpoint is still advanced in this case (otherwise a very
+        /// active timeline would never stop re-scanning), but a future UI could use
+        /// this to tell the user the ingest may be incomplete.
+        let lastRefreshHitCap: Bool
     }
 
     init(client: ATProtoClient, maxPages: Int = 10, maxPosts: Int = 1000) {
@@ -30,43 +36,69 @@ final class IngestService {
         var cursor: String?
         var pageCount = 0
         var postsProcessed = 0
-        var newestURIThisRefresh: String?
+        var newestKeyThisRefresh: String?
         var newItemCount = 0
         var shouldStop = false
+        var hitCap = false
 
         while !shouldStop {
             let response = try await client.getTimeline(limit: 100, cursor: cursor)
             if response.feed.isEmpty { break }
 
-            for feedPost in response.feed {
-                if newestURIThisRefresh == nil {
-                    newestURIThisRefresh = feedPost.post.uri
-                }
-                if let stopMarker, feedPost.post.uri == stopMarker {
-                    shouldStop = true
-                    break
-                }
+            let (itemsToProcess, reachedMarker) = Self.itemsBeforeCheckpoint(response.feed, marker: stopMarker)
 
+            for feedPost in itemsToProcess {
+                if newestKeyThisRefresh == nil {
+                    newestKeyThisRefresh = feedPost.feedItemKey
+                }
                 for link in LinkExtractor.extract(from: feedPost) {
                     newItemCount += try await ingest(link: link, existingURLs: &existingURLs, context: context)
                 }
                 postsProcessed += 1
             }
 
+            if reachedMarker {
+                shouldStop = true
+                break
+            }
+
             pageCount += 1
             cursor = response.cursor
-            if cursor == nil || pageCount >= maxPages || postsProcessed >= maxPosts {
+            if cursor == nil {
+                break
+            }
+            if pageCount >= maxPages || postsProcessed >= maxPosts {
+                hitCap = true
                 break
             }
         }
 
-        if let newestURIThisRefresh {
-            ingestState.newestSeenPostURI = newestURIThisRefresh
+        if let newestKeyThisRefresh {
+            ingestState.newestSeenPostURI = newestKeyThisRefresh
         }
         ingestState.lastRefreshAt = Date()
 
         try context.save()
-        return RefreshResult(newItemCount: newItemCount)
+        return RefreshResult(newItemCount: newItemCount, lastRefreshHitCap: hitCap)
+    }
+
+    /// Pure helper: splits a feed page at the stop marker (a `FeedViewPost.feedItemKey`).
+    /// Returns the items before the marker (to be ingested) and whether the marker was
+    /// found in this page. A nil marker means "no checkpoint yet" — the whole page is
+    /// returned and `reachedMarker` is false.
+    nonisolated static func itemsBeforeCheckpoint(
+        _ feed: [FeedViewPost],
+        marker: String?
+    ) -> (items: [FeedViewPost], reachedMarker: Bool) {
+        guard let marker else { return (feed, false) }
+        var items: [FeedViewPost] = []
+        for feedPost in feed {
+            if feedPost.feedItemKey == marker {
+                return (items, true)
+            }
+            items.append(feedPost)
+        }
+        return (items, false)
     }
 
     /// Resolves shorteners, normalizes, dedups, and inserts a single extracted link.

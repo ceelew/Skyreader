@@ -48,6 +48,7 @@
 		D4388153064DDD98D641AFF3 /* HTMLMetaParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E3561BE62E6DC8620BBD54 /* HTMLMetaParser.swift */; };
 		EABE026B9699BE7130BC377A /* RetentionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7003A625B1FBAD910675327B /* RetentionService.swift */; };
 		EDA65EDF9D2253C4EE35128B /* HeadlineResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 070CB01E2FE759458C4C8642 /* HeadlineResolver.swift */; };
+		F7DE1226E21F1A20D6E2707B /* IngestCheckpointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D16A97672452FBD2316448A /* IngestCheckpointTests.swift */; };
 		F9AF24A6BE6ED7CD8FB8AF3A /* bsky_app_link_skipped.json in Resources */ = {isa = PBXBuildFile; fileRef = EFD7579F58F2A00181B4AA66 /* bsky_app_link_skipped.json */; };
 /* End PBXBuildFile section */
 
@@ -75,6 +76,7 @@
 		43A1FC8D85FE22C539616103 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		561F0D0B81ADEECC62A3CBCA /* URLNormalizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLNormalizer.swift; sourceTree = "<group>"; };
 		562C315CE85EF3B9A900D291 /* BlueskyReaderTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BlueskyReaderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		5D16A97672452FBD2316448A /* IngestCheckpointTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngestCheckpointTests.swift; sourceTree = "<group>"; };
 		6F2F74B17400F77827DD216E /* BlueskyReaderApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlueskyReaderApp.swift; sourceTree = "<group>"; };
 		7003A625B1FBAD910675327B /* RetentionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetentionService.swift; sourceTree = "<group>"; };
 		70C02A75EFAED02C5CE9E34E /* LinkItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkItem.swift; sourceTree = "<group>"; };
@@ -249,6 +251,7 @@
 				A5084A78DAAF166958AA41A3 /* DateParsingTests.swift */,
 				7D41DC561E60785DCB6488AA /* FixtureLoader.swift */,
 				1663A648097B834FC952198D /* HTMLMetaParserTests.swift */,
+				5D16A97672452FBD2316448A /* IngestCheckpointTests.swift */,
 				AFD9C489ED596775A6BE0633 /* LinkExtractorTests.swift */,
 				1581B7795F025AD3AFF51D55 /* PublicationMapperTests.swift */,
 				F0C6D4A024344C33B3DCDE4B /* URLNormalizerTests.swift */,
@@ -404,6 +407,7 @@
 				8460407D69D10D17FD06BA4D /* DateParsingTests.swift in Sources */,
 				98412B79687D4C0C83D6D80F /* FixtureLoader.swift in Sources */,
 				3D141984291C622FC186A70B /* HTMLMetaParserTests.swift in Sources */,
+				F7DE1226E21F1A20D6E2707B /* IngestCheckpointTests.swift in Sources */,
 				386F3300A84D3A2155C165CD /* LinkExtractorTests.swift in Sources */,
 				D0FA2CCB0E595BEE215895B6 /* PublicationMapperTests.swift in Sources */,
 				C626C95017A3973B36D79319 /* URLNormalizerTests.swift in Sources */,

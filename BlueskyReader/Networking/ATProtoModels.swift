@@ -53,6 +53,17 @@ struct GetTimelineResponse: Decodable {
 struct FeedViewPost: Decodable {
     let post: PostView
     let reason: FeedReason?
+
+    /// Identity for this feed *item*, not just the underlying post. A repost of an
+    /// already-seen post has the same `post.uri` but is a distinct feed entry — keying
+    /// on `post.uri` alone would make the repost look identical to the original and
+    /// could falsely trip the ingest checkpoint (see IngestService).
+    var feedItemKey: String {
+        if let reason, reason.isRepost {
+            return "\(post.uri)#repost:\(reason.by?.did ?? "")@\(reason.indexedAt ?? "")"
+        }
+        return post.uri
+    }
 }
 
 struct FeedReason: Decodable {
