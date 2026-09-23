@@ -11,6 +11,7 @@
 		06824532AAE9CD0CAA5C8C9E /* external_embed_with_title.json in Resources */ = {isa = PBXBuildFile; fileRef = EAB6E4B33B31F1ACF5DD5354 /* external_embed_with_title.json */; };
 		0758715A19C655F5DB6700FE /* PublicationMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A451995DE5D5A06AC2939769 /* PublicationMapper.swift */; };
 		0B2A5B0202B19640D01BDA71 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE2BD7BEC59F9D54C3654616 /* AppModel.swift */; };
+		0DDA2278AB62A133C078D988 /* ATProtoClientStatusTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E2BDD345E348786DD224366 /* ATProtoClientStatusTests.swift */; };
 		1183726932631B35CE9F8CAE /* ATProtoURI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E18BE484565EA5E0C1963E7 /* ATProtoURI.swift */; };
 		168BB27824E1EDB154BFA405 /* IngestState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 736D2E66F2D46E934758157E /* IngestState.swift */; };
 		237719CC32015886A04EAFF6 /* DateGroupingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F2AA53236FCBB219D3D3D26 /* DateGroupingTests.swift */; };
@@ -70,6 +71,7 @@
 		1F4D341ACF81063D3C67A032 /* ReaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReaderView.swift; sourceTree = "<group>"; };
 		23D9BA92E279A5B8FC475719 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		2C18AAD5D47E32902FD63853 /* DateParsing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateParsing.swift; sourceTree = "<group>"; };
+		2E2BDD345E348786DD224366 /* ATProtoClientStatusTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ATProtoClientStatusTests.swift; sourceTree = "<group>"; };
 		43A1FC8D85FE22C539616103 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		561F0D0B81ADEECC62A3CBCA /* URLNormalizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLNormalizer.swift; sourceTree = "<group>"; };
 		562C315CE85EF3B9A900D291 /* BlueskyReaderTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BlueskyReaderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -242,6 +244,7 @@
 		D87881928EEB3850982E11EF /* BlueskyReaderTests */ = {
 			isa = PBXGroup;
 			children = (
+				2E2BDD345E348786DD224366 /* ATProtoClientStatusTests.swift */,
 				7F2AA53236FCBB219D3D3D26 /* DateGroupingTests.swift */,
 				A5084A78DAAF166958AA41A3 /* DateParsingTests.swift */,
 				7D41DC561E60785DCB6488AA /* FixtureLoader.swift */,
@@ -396,6 +399,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0DDA2278AB62A133C078D988 /* ATProtoClientStatusTests.swift in Sources */,
 				237719CC32015886A04EAFF6 /* DateGroupingTests.swift in Sources */,
 				8460407D69D10D17FD06BA4D /* DateParsingTests.swift in Sources */,
 				98412B79687D4C0C83D6D80F /* FixtureLoader.swift in Sources */,

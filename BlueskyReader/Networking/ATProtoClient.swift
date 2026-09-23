@@ -80,22 +80,27 @@ actor ATProtoClient {
 
         let (data, response) = try await performRaw(request)
 
-        if let http = response as? HTTPURLResponse {
-            if http.statusCode == 429 {
-                let retryAfter = http.value(forHTTPHeaderField: "ratelimit-reset").flatMap(TimeInterval.init)
-                throw ATProtoError.rateLimited(retryAfter: retryAfter)
-            }
-            if http.statusCode == 400 || http.statusCode == 401 {
-                let errorBody = try? JSONDecoder().decode(ATProtoErrorBody.self, from: data)
-                if errorBody?.error == "ExpiredToken" && retrying {
-                    try await refreshSession()
-                    return try await performAuthenticated(url: url, retrying: false)
-                }
+        if let http = response as? HTTPURLResponse, !(200..<300).contains(http.statusCode) {
+            let errorBody = try? JSONDecoder().decode(ATProtoErrorBody.self, from: data)
+            let decision = Self.classifyStatus(
+                status: http.statusCode,
+                errorBody: errorBody,
+                allowExpiredRetry: retrying,
+                rateLimitResetHeader: http.value(forHTTPHeaderField: "ratelimit-reset"),
+                now: Date()
+            )
+            switch decision {
+            case .ok:
+                break
+            case .retryExpiredToken:
+                try await refreshSession()
+                return try await performAuthenticated(url: url, retrying: false)
+            case .invalidCredentials:
                 throw ATProtoError.invalidCredentials
-            }
-            guard (200..<300).contains(http.statusCode) else {
-                let errorBody = try? JSONDecoder().decode(ATProtoErrorBody.self, from: data)
-                throw ATProtoError.server(status: http.statusCode, message: errorBody?.message ?? errorBody?.error)
+            case .rateLimited(let retryAfter):
+                throw ATProtoError.rateLimited(retryAfter: retryAfter)
+            case .server(let status, let message):
+                throw ATProtoError.server(status: status, message: message)
             }
         }
         return data
@@ -171,13 +176,72 @@ actor ATProtoClient {
 
     private static func checkStatus(_ response: URLResponse, data: Data) throws {
         guard let http = response as? HTTPURLResponse else { return }
-        guard (200..<300).contains(http.statusCode) else {
-            let errorBody = try? JSONDecoder().decode(ATProtoErrorBody.self, from: data)
-            if http.statusCode == 401 || http.statusCode == 400 {
-                throw ATProtoError.invalidCredentials
-            }
-            throw ATProtoError.server(status: http.statusCode, message: errorBody?.message ?? errorBody?.error)
+        guard !(200..<300).contains(http.statusCode) else { return }
+
+        let errorBody = try? JSONDecoder().decode(ATProtoErrorBody.self, from: data)
+        let decision = classifyStatus(
+            status: http.statusCode,
+            errorBody: errorBody,
+            allowExpiredRetry: false,
+            rateLimitResetHeader: http.value(forHTTPHeaderField: "ratelimit-reset"),
+            now: Date()
+        )
+        switch decision {
+        case .ok, .retryExpiredToken:
+            // Non-2xx never maps to these when allowExpiredRetry is false.
+            return
+        case .invalidCredentials:
+            throw ATProtoError.invalidCredentials
+        case .rateLimited(let retryAfter):
+            throw ATProtoError.rateLimited(retryAfter: retryAfter)
+        case .server(let status, let message):
+            throw ATProtoError.server(status: status, message: message)
         }
+    }
+
+    /// Pure status → error classification, factored out so it's unit-testable without the network.
+    enum StatusDecision: Equatable {
+        case ok
+        case retryExpiredToken
+        case invalidCredentials
+        case rateLimited(retryAfter: TimeInterval?)
+        case server(status: Int, message: String?)
+    }
+
+    static func classifyStatus(
+        status: Int,
+        errorBody: ATProtoErrorBody?,
+        allowExpiredRetry: Bool,
+        rateLimitResetHeader: String?,
+        now: Date
+    ) -> StatusDecision {
+        if (200..<300).contains(status) {
+            return .ok
+        }
+        if status == 429 {
+            return .rateLimited(retryAfter: retryAfterInterval(fromEpochHeader: rateLimitResetHeader, now: now))
+        }
+        if status == 401 {
+            return .invalidCredentials
+        }
+        if status == 400 {
+            switch errorBody?.error {
+            case "ExpiredToken":
+                return allowExpiredRetry ? .retryExpiredToken : .invalidCredentials
+            case "InvalidToken", "AuthenticationRequired":
+                return .invalidCredentials
+            default:
+                return .server(status: 400, message: errorBody?.message ?? errorBody?.error)
+            }
+        }
+        return .server(status: status, message: errorBody?.message ?? errorBody?.error)
+    }
+
+    /// `ratelimit-reset` is a UNIX epoch-seconds timestamp, not a delta — convert to
+    /// seconds-from-now and clamp to non-negative.
+    static func retryAfterInterval(fromEpochHeader header: String?, now: Date) -> TimeInterval? {
+        guard let header, let epochSeconds = TimeInterval(header) else { return nil }
+        return max(0, epochSeconds - now.timeIntervalSince1970)
     }
 
     // MARK: - Timeline
