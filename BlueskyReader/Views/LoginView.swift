@@ -9,6 +9,7 @@ struct LoginView: View {
     @State private var error: String?
     @State private var isSigningIn = false
     let signIn: (String, String) async throws -> Void
+    var message: String? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -21,6 +22,11 @@ struct LoginView: View {
                     .font(.system(.title3, design: .serif))
                     .foregroundStyle(Color.inkSecondary)
                     .fixedSize(horizontal: false, vertical: true)
+                if let message {
+                    Text(message)
+                        .font(.footnote)
+                        .foregroundStyle(Color.inkSecondary)
+                }
             }
             .padding(.top, 44)
 

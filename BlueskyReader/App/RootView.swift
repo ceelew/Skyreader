@@ -11,9 +11,9 @@ struct RootView: View {
             } else if appModel.isAuthenticated {
                 ReadingListView()
             } else {
-                LoginView { handle, appPassword in
+                LoginView(signIn: { handle, appPassword in
                     try await appModel.login(handle: handle, appPassword: appPassword)
-                }
+                }, message: appModel.loginMessage)
             }
         }
         .task {

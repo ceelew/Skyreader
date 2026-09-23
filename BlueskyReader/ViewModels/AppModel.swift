@@ -15,6 +15,12 @@ final class AppModel {
     var isOffline: Bool = false
     var lastRefreshNewItemCount: Int?
     var lastRefreshDate: Date?
+    /// Non-offline status text for the reading list's status strip (rate limiting,
+    /// server errors, decoding failures). Cleared on the next successful refresh.
+    var bannerMessage: String?
+    /// Set when a refresh had to sign the user out (expired/invalid credentials) so
+    /// LoginView can explain why they're back at the login screen.
+    var loginMessage: String?
 
     private let staleThreshold: TimeInterval = 15 * 60
 
@@ -34,11 +40,40 @@ final class AppModel {
             lastRefreshNewItemCount = result.newItemCount
             lastRefreshDate = Date()
             isOffline = false
+            bannerMessage = nil
             Task { await headlineResolver.resolveUnresolvedHeadlines(context: context) }
         } catch {
-            if let urlError = (error as? ATProtoError), case .network = urlError {
-                isOffline = true
+            await handleRefreshError(error)
+        }
+    }
+
+    private func handleRefreshError(_ error: Error) async {
+        guard let atError = error as? ATProtoError else {
+            bannerMessage = "Couldn't read the timeline response."
+            return
+        }
+
+        switch atError {
+        case .network:
+            isOffline = true
+
+        case .invalidCredentials, .notAuthenticated:
+            await logout()
+            loginMessage = "Your Bluesky session ended. Sign in again."
+
+        case .rateLimited(let retryAfter):
+            if let retryAfter {
+                let minutes = max(1, Int((retryAfter / 60).rounded(.up)))
+                bannerMessage = "Bluesky is rate-limiting requests. Try again in \(minutes) min."
+            } else {
+                bannerMessage = "Bluesky is rate-limiting requests. Try again shortly."
             }
+
+        case .server(let status, _):
+            bannerMessage = "Bluesky returned an error (\(status)). Pull to retry."
+
+        case .decoding, .expiredToken:
+            bannerMessage = "Couldn't read the timeline response."
         }
     }
 
@@ -62,6 +97,7 @@ final class AppModel {
             try await client.login(handle: handle, appPassword: appPassword)
             isAuthenticated = true
             currentHandle = await client.handle
+            loginMessage = nil
         } catch {
             isAuthenticated = false
             throw error

@@ -145,7 +145,10 @@ struct ReadingListView: View {
             Rectangle().fill(Color.rule).frame(height: 0.5)
 
             if appModel.isOffline {
-                offlineStrip
+                statusStrip(text: "Offline — showing \(items.count) saved articles", dotColor: .inkTertiary)
+                Rectangle().fill(Color.rule).frame(height: 0.5)
+            } else if let bannerMessage = appModel.bannerMessage {
+                statusStrip(text: bannerMessage, dotColor: .destructive)
                 Rectangle().fill(Color.rule).frame(height: 0.5)
             }
         }
@@ -200,14 +203,16 @@ struct ReadingListView: View {
     }
 
     /// Design spec: an 11pt-padded strip on #F2EFE8 (light) between two rules, a 6pt
-    /// inkTertiary dot + "Offline — showing N saved articles" in .footnote, inkSecondary.
-    /// No token in Theme.swift matches #F2EFE8 (no dark value given either), and adding
-    /// a tenth color asset isn't allowed by the brief — using `surface` as the nearest
-    /// existing "elevated strip" role instead. Flagged to Corey; not a silent swap.
-    private var offlineStrip: some View {
+    /// dot + message in .footnote, inkSecondary. No token in Theme.swift matches
+    /// #F2EFE8 (no dark value given either), and adding a tenth color asset isn't
+    /// allowed by the brief — using `surface` as the nearest existing "elevated
+    /// strip" role instead. Flagged to Corey; not a silent swap.
+    /// Shared by the offline strip and the error/rate-limit banner; only the dot
+    /// color and text differ.
+    private func statusStrip(text: String, dotColor: Color) -> some View {
         HStack(spacing: Space.s) {
-            Circle().fill(Color.inkTertiary).frame(width: 6, height: 6)
-            Text("Offline — showing \(items.count) saved articles")
+            Circle().fill(dotColor).frame(width: 6, height: 6)
+            Text(text)
                 .font(.footnote)
                 .foregroundStyle(Color.inkSecondary)
         }
