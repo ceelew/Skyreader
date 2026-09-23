@@ -17,7 +17,7 @@ enum HeadlinePageFetcher {
     /// everything we need (og:title/og:site_name/<title>) lives in `<head>`, so most
     /// pages let us stop well short of the full body.
     static func fetchMeta(for urlString: String, session: URLSession = .shared) async -> HTMLMetaParser.PageMeta? {
-        guard let url = URL(string: urlString) else { return nil }
+        guard let url = URL(string: URLNormalizer.upgradedToHTTPS(urlString)) else { return nil }
 
         var request = URLRequest(url: url)
         request.timeoutInterval = timeout

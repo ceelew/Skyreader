@@ -17,6 +17,7 @@ struct RootView: View {
                 }, message: appModel.loginMessage)
             }
         }
+        .tint(Color.accent)
         .task {
             guard !didRestoreSession else { return }
             #if DEBUG

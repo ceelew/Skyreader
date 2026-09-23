@@ -32,6 +32,8 @@ final class HeadlineResolver {
         isRunning = true
         defer { isRunning = false }
 
+        await repairUnresolvedShorteners(context: context)
+
         let descriptor = FetchDescriptor<LinkItem>(
             predicate: #Predicate<LinkItem> { $0.headlineResolved == false }
         )
@@ -46,6 +48,37 @@ final class HeadlineResolver {
         }
 
         await enrichPublicationsForUnmappedHosts(context: context)
+    }
+
+    /// Items ingested while a shortener wouldn't resolve still point at the shortener
+    /// and show it as their publication. Retry those (a bounded batch per run) and move
+    /// them to the real URL and publication. `normalizedURL` stays as-is: it's the
+    /// unique key, and rewriting it could collide with an existing row.
+    private func repairUnresolvedShorteners(context: ModelContext) async {
+        guard let allItems = try? context.fetch(FetchDescriptor<LinkItem>()) else { return }
+        let stuck = allItems.filter { item in
+            URLNormalizer.host(of: item.originalURL).map(URLNormalizer.isShortener(host:)) ?? false
+        }.prefix(20)
+        guard !stuck.isEmpty else { return }
+
+        let resolved = await IngestService.resolveRedirects(Set(stuck.map(\.originalURL)))
+        for item in stuck {
+            guard let finalURL = resolved[item.originalURL], finalURL != item.originalURL,
+                  let host = URLNormalizer.host(of: finalURL) else { continue }
+            let shortenerHost = URLNormalizer.host(of: item.originalURL)
+            item.originalURL = finalURL
+            item.publication = PublicationMapper.publication(
+                ogSiteName: siteNameCache.siteName(forHost: host),
+                finalURLHost: host
+            )
+            if item.headline == shortenerHost {
+                // Placeholder was the shortener's host; let the headline pass fetch the real title.
+                item.headline = host
+                item.headlineResolved = false
+                item.headlineFetchAttempts = 0
+            }
+        }
+        try? context.save()
     }
 
     /// Second pass: items with an *embed* title (already headlineResolved) can still

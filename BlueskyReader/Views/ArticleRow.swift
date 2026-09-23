@@ -1,7 +1,7 @@
 //  ArticleRow.swift
-//  The heart of the app. One row = one article.
-//  Rules: the headline never truncates, the meta line always fits on one,
-//  read state is a colour shift only, and the unread dot lives in the gutter.
+//  One row = one article, laid out like a news app: source and time on top,
+//  a serif headline that never truncates, then who shared it.
+//  Unread gets a Mail-style dot in the leading gutter; read dims the headline.
 
 import SwiftUI
 
@@ -12,42 +12,39 @@ struct ArticleRow: View {
     @Environment(\.dynamicTypeSize) private var typeSize
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text(item.headline)
+        VStack(alignment: .leading, spacing: 6) {
+            sourceLine
+
+            Text(displayHeadline)
                 .font(item.headlineResolved ? .articleHead : .unresolved)
-                .foregroundStyle(item.isRead ? Color.inkSecondary : Color.ink)
-                .lineSpacing(4)
+                .foregroundStyle(item.isRead ? .secondary : .primary)
                 .fixedSize(horizontal: false, vertical: true)   // never truncate a headline
 
-            HStack(spacing: 7) {
-                metaLine
-                    .font(.meta)
-                    .foregroundStyle(item.isRead ? Color.inkTertiary : Color.inkSecondary)
-                if item.isSaved {
-                    Image(systemName: "bookmark.fill")
-                        .font(.system(size: 11))
-                        .foregroundStyle(Color.accent)
-                        .accessibilityHidden(true)
-                }
-            }
-            .padding(.top, 6)
+            Text("Shared by @\(item.sharedByHandle)")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .lineLimit(typeSize.isAccessibilitySize ? 3 : 1)
 
             if showCommentary, let note = item.postText, !note.isEmpty {
                 Text(note)
                     .font(.commentary)
-                    .foregroundStyle(Color.inkTertiary)
-                    .lineLimit(2)
-                    .padding(.top, 5)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(3)
+                    .padding(.leading, 10)
+                    .overlay(alignment: .leading) {
+                        Capsule().fill(.quaternary).frame(width: 3)
+                    }
+                    .padding(.top, 2)
             }
         }
-        .skyreaderRowInsets()
+        .padding(.vertical, 6)
         .overlay(alignment: .topLeading) {
             if !item.isRead {
                 Circle()
                     .fill(Color.accent)
-                    .frame(width: 7, height: 7)
-                    .padding(.leading, Space.s)   // centred in the 20pt gutter
-                    .padding(.top, 22)            // aligned to the headline's first line
+                    .frame(width: 9, height: 9)
+                    // Centred on the publication line (which sits below the 6pt top padding).
+                    .offset(x: -15, y: 10)
                     .accessibilityHidden(true)
             }
         }
@@ -56,20 +53,33 @@ struct ArticleRow: View {
         .accessibilityLabel(a11yLabel)
     }
 
-    /// The sharer's handle gives way first so the time never gets truncated.
-    @ViewBuilder private var metaLine: some View {
-        if typeSize.isAccessibilitySize {
-            Text("\(item.publication) · shared by @\(item.sharedByHandle) · \(item.appearedAt.relativeShort)")
-                .lineLimit(3)
-        } else {
-            HStack(spacing: 0) {
-                Text("\(item.publication) · shared by @\(item.sharedByHandle)")
-                    .lineLimit(1)
-                    .truncationMode(.tail)
-                Text(" · \(item.appearedAt.relativeShort)")
-                    .lineLimit(1)
-                    .fixedSize()
+    private var displayHeadline: String {
+        HeadlineCleaner.clean(item.headline, publication: item.publication,
+                              host: URLNormalizer.host(of: item.originalURL))
+    }
+
+    /// Publication on the left, time (and saved mark) on the right. Stacks at
+    /// accessibility sizes so neither side gets squeezed.
+    @ViewBuilder private var sourceLine: some View {
+        let layout = typeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 2))
+            : AnyLayout(HStackLayout(spacing: 6))
+        layout {
+            Text(item.publication)
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(item.isRead ? Color.secondary : Color.accent)
+                .lineLimit(1)
+            if !typeSize.isAccessibilitySize { Spacer(minLength: 8) }
+            HStack(spacing: 6) {
+                if item.isSaved {
+                    Image(systemName: "bookmark.fill")
+                        .foregroundStyle(.orange)
+                }
+                Text(item.appearedAt.relativeShort)
+                    .foregroundStyle(.secondary)
             }
+            .font(.footnote)
+            .fixedSize()
         }
     }
 
@@ -78,7 +88,7 @@ struct ArticleRow: View {
         var parts: [String] = []
         parts.append(item.isRead ? "Read." : "Unread.")
         if item.isSaved { parts.append("Saved.") }
-        parts.append(item.headline)
+        parts.append(displayHeadline)
         parts.append("\(item.publication), shared by @\(item.sharedByHandle), \(item.appearedAt.relativeShort)")
         return parts.joined(separator: " ")
     }

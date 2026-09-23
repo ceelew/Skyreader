@@ -143,4 +143,10 @@ final class URLNormalizerTests: XCTestCase {
         XCTAssertTrue(result.hasSuffix("…"))
         XCTAssertFalse(result.contains("second-component"))
     }
+
+    func testUpgradedToHTTPS() {
+        XCTAssertEqual(URLNormalizer.upgradedToHTTPS("http://dlvr.it/TVcd2k"), "https://dlvr.it/TVcd2k")
+        XCTAssertEqual(URLNormalizer.upgradedToHTTPS("HTTP://example.com/a"), "https://example.com/a")
+        XCTAssertEqual(URLNormalizer.upgradedToHTTPS("https://example.com"), "https://example.com")
+    }
 }

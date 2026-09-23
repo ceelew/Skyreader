@@ -1,11 +1,6 @@
 //  ReadingListView.swift
-//  A plain list on paper: hairline rules, pinned day headers, no cards, no shadows.
-//
-//  Adapted from the Skyreader design handoff. The handoff's stub takes pre-grouped
-//  `days` as an external parameter while keeping `filter` as internal @State — those
-//  two can't coexist (the caller can't filter data it was never given), so the data
-//  layer is internalized here (@Query + AppModel, matching the rest of this app)
-//  while every visual/behavioral spec from the design is kept exact.
+//  The main screen: a standard iOS list under a large title, grouped by the day each
+//  link appeared in the feed. Filter and settings live in the toolbar; search pulls down.
 
 import SwiftUI
 import SwiftData
@@ -14,6 +9,14 @@ import UIKit
 enum ListFilter: String, CaseIterable, Identifiable {
     case all = "All", unread = "Unread", saved = "Saved"
     var id: String { rawValue }
+
+    var systemImage: String {
+        switch self {
+        case .all: "tray"
+        case .unread: "circle.inset.filled"
+        case .saved: "bookmark"
+        }
+    }
 }
 
 struct ReadingListView: View {
@@ -21,7 +24,6 @@ struct ReadingListView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.openURL) private var openURL
-    @Environment(\.dynamicTypeSize) private var typeSize
 
     @Query(sort: \LinkItem.appearedAt, order: .reverse) private var items: [LinkItem]
 
@@ -30,221 +32,220 @@ struct ReadingListView: View {
     @AppStorage("retentionDays") private var retentionDays = 30
 
     @State private var filter: ListFilter = .all
+    @State private var searchText = ""
     @State private var newCount: Int?
     @State private var readerURL: IdentifiableURL?
+    @State private var showSettings = false
 
     var body: some View {
         NavigationStack {
             List {
+                if let status = statusMessage {
+                    statusRow(status)
+                }
                 ForEach(days) { day in
-                    Section {
+                    Section(day.title) {
                         ForEach(day.items) { item in
-                            Button { openArticle(item) } label: {
-                                ArticleRow(item: item, showCommentary: showCommentary)
-                            }
-                            .buttonStyle(.plain)
-                            .listRowInsets(EdgeInsets())
-                            .listRowBackground(Color.paper)
-                            .listRowSeparatorTint(Color.rule)
-                            .alignmentGuide(.listRowSeparatorLeading) { _ in Space.xl }
-                            .swipeActions(edge: .leading) {
-                                Button(item.isRead ? "Mark unread" : "Mark read") { toggleRead(item) }
-                                    .tint(.accent)
-                            }
-                            .swipeActions(edge: .trailing) {
-                                Button(item.isSaved ? "Unsave" : "Save") { toggleSaved(item) }
-                                    .tint(.accent)
-                                if let url = URL(string: item.originalURL) {
-                                    ShareLink(item: url) { Text("Share") }
-                                        .tint(.inkTertiary)
-                                }
-                            }
-                            .contextMenu {
-                                Button("Open post in Bluesky") { openPost(item) }
-                                Button("Copy link") { copyLink(item) }
-                            }
+                            row(for: item)
                         }
-                    } header: {
-                        Text(day.title)
-                            .font(.dayHeader)
-                            .textCase(.uppercase)
-                            .tracking(0.9)
-                            .foregroundStyle(Color.inkTertiary)
-                            .padding(.top, Space.xxl)
-                            .padding(.bottom, 10)
-                            .padding(.horizontal, Space.xl)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(Color.paper)
                     }
-                    .listRowSeparator(.hidden, edges: .top)
                 }
             }
             .listStyle(.plain)
-            .listSectionSeparator(.hidden)
-            .environment(\.defaultMinListRowHeight, 64)
-            .scrollContentBackground(.hidden)
-            .background(Color.paper)
+            .navigationTitle(filter == .all ? "Skyreader" : filter.rawValue)
+            .searchable(text: $searchText, prompt: "Headlines, publications, people")
+            .toolbar { toolbarContent }
+            .overlay { emptyState }
+            .overlay(alignment: .bottom) { if let n = newCount { newArticlesPill(n) } }
             .refreshable { await performRefresh() }
-            .safeAreaInset(edge: .top, spacing: 0) { masthead }
-            .overlay(alignment: .top) { if let n = newCount { newArticlesPill(n) } }
-            .toolbar(.hidden, for: .navigationBar)
             .task {
                 RetentionService.pruneOldUnread(context: modelContext, retentionDays: retentionDays)
-                if items.isEmpty {
-                    await performRefresh()
-                }
+                // Refresh on every launch (refreshIfStale always runs the first time),
+                // so opening the app shows fresh links and retries stuck metadata.
+                await performRefresh()
             }
             .onChange(of: scenePhase) { _, newPhase in
                 guard newPhase == .active else { return }
                 Task { await appModel.refreshIfStale(context: modelContext) }
             }
-            .sheet(item: $readerURL) { wrapped in
-                ReaderView(url: wrapped.url)
+            .sheet(isPresented: $showSettings) {
+                SettingsView(
+                    handle: appModel.currentHandle ?? "unknown",
+                    signOut: { Task { await appModel.signOut(context: modelContext) } }
+                )
+            }
+            .fullScreenCover(item: $readerURL) { wrapped in
+                ReaderView(url: wrapped.url) { readerURL = nil }
                     .ignoresSafeArea()
             }
         }
     }
 
-    // MARK: masthead — serif title, date line, filters, one hairline
+    // MARK: rows
 
-    private var masthead: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("Skyreader")
-                        .font(.masthead)
-                        .tracking(-0.5)
-                        .foregroundStyle(Color.ink)
-                    // At accessibility sizes the date wraps to several lines of a pinned
-                    // header; drop it there so the list keeps most of the screen.
-                    if !typeSize.isAccessibilitySize {
-                    Text(dateLine)
-                        .font(.caption).fontWeight(.semibold)
-                        .textCase(.uppercase)
-                        .tracking(1.1)
-                        .foregroundStyle(Color.inkTertiary)
-                    }
-                }
-                Spacer()
-                NavigationLink {
-                    SettingsView(
-                        handle: appModel.currentHandle ?? "unknown",
-                        storedCount: items.count,
-                        signOut: { Task { await appModel.signOut(context: modelContext) } },
-                        pruneRead: { RetentionService.pruneRead(context: modelContext) }
-                    )
-                } label: {
-                    Image(systemName: "ellipsis")
-                        .foregroundStyle(Color.inkSecondary)
-                        .frame(width: 44, height: 44, alignment: .trailing)
-                }
+    private func row(for item: LinkItem) -> some View {
+        Button { openArticle(item) } label: {
+            ArticleRow(item: item, showCommentary: showCommentary)
+        }
+        .swipeActions(edge: .leading) {
+            Button { toggleRead(item) } label: {
+                Label(item.isRead ? "Unread" : "Read",
+                      systemImage: item.isRead ? "circle.inset.filled" : "checkmark.circle")
             }
-            .padding(.horizontal, Space.xl)
-            .padding(.top, 14)
-
-            filterRow
-                .padding(.horizontal, Space.xl)
-                .padding(.top, 18)
-
-            Rectangle().fill(Color.rule).frame(height: 0.5)
-
-            if appModel.isOffline {
-                statusStrip(text: "Offline — showing \(items.count) saved articles", dotColor: .inkTertiary)
-                Rectangle().fill(Color.rule).frame(height: 0.5)
-            } else if let bannerMessage = appModel.bannerMessage {
-                statusStrip(text: bannerMessage, dotColor: .destructive)
-                Rectangle().fill(Color.rule).frame(height: 0.5)
+            .tint(Color.accent)
+        }
+        .swipeActions(edge: .trailing) {
+            Button { toggleSaved(item) } label: {
+                Label(item.isSaved ? "Unsave" : "Save",
+                      systemImage: item.isSaved ? "bookmark.slash" : "bookmark")
+            }
+            .tint(.orange)
+            if let url = URL(string: item.originalURL) {
+                ShareLink(item: url) { Label("Share", systemImage: "square.and.arrow.up") }
+                    .tint(.gray)
             }
         }
-        .background(Color.paper)
+        .contextMenu {
+            Button { toggleRead(item) } label: {
+                Label(item.isRead ? "Mark as Unread" : "Mark as Read",
+                      systemImage: item.isRead ? "circle.inset.filled" : "checkmark.circle")
+            }
+            Button { toggleSaved(item) } label: {
+                Label(item.isSaved ? "Remove from Saved" : "Save",
+                      systemImage: item.isSaved ? "bookmark.slash" : "bookmark")
+            }
+            Divider()
+            if let url = URL(string: item.originalURL) {
+                ShareLink(item: url) { Label("Share", systemImage: "square.and.arrow.up") }
+            }
+            Button { copyLink(item) } label: { Label("Copy Link", systemImage: "link") }
+            Button { openPost(item) } label: {
+                Label("Open Post in Bluesky", systemImage: "bubble.left.and.text.bubble.right")
+            }
+        }
     }
 
-    /// Text tabs with a 2pt ink underline — quieter than a segmented control.
-    /// Collapses to a Menu at accessibility sizes, where three labels can't share a row.
-    @ViewBuilder private var filterRow: some View {
-        if typeSize.isAccessibilitySize {
-            Menu {
-                ForEach(ListFilter.allCases) { f in Button(f.rawValue) { filter = f } }
-            } label: {
-                HStack(spacing: 4) { Text(filter.rawValue); Image(systemName: "chevron.down") }
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Color.ink)
-                    .frame(minHeight: 44)
+    @ToolbarContentBuilder private var toolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .topBarLeading) {
+            Button { showSettings = true } label: {
+                Image(systemName: "gearshape")
             }
-        } else {
-            HStack(spacing: 22) {
-                ForEach(ListFilter.allCases) { f in
-                    Button { filter = f } label: {
-                        VStack(spacing: 7) {
-                            Text(f.rawValue)
-                                .font(.subheadline)
-                                .fontWeight(filter == f ? .semibold : .regular)
-                                .foregroundStyle(filter == f ? Color.ink : Color.inkTertiary)
-                            Rectangle()
-                                .fill(filter == f ? Color.ink : .clear)
-                                .frame(height: 2)
-                        }
+            .accessibilityLabel("Settings")
+        }
+        ToolbarItem(placement: .topBarTrailing) {
+            Menu {
+                Picker("Show", selection: $filter) {
+                    ForEach(ListFilter.allCases) { f in
+                        Label(f.rawValue, systemImage: f.systemImage).tag(f)
                     }
-                    .buttonStyle(.plain)
                 }
-                Spacer()
+            } label: {
+                Image(systemName: filter == .all
+                      ? "line.3.horizontal.decrease.circle"
+                      : "line.3.horizontal.decrease.circle.fill")
+            }
+            .accessibilityLabel("Filter, \(filter.rawValue)")
+        }
+    }
+
+    // MARK: status, empty states, feedback
+
+    private struct StatusMessage {
+        let text: String
+        let systemImage: String
+        let isError: Bool
+    }
+
+    private var statusMessage: StatusMessage? {
+        if appModel.isOffline {
+            return StatusMessage(text: "You're offline. Showing articles saved on this iPhone.",
+                                 systemImage: "wifi.slash", isError: false)
+        }
+        if let banner = appModel.bannerMessage {
+            return StatusMessage(text: banner, systemImage: "exclamationmark.triangle.fill", isError: true)
+        }
+        return nil
+    }
+
+    private func statusRow(_ status: StatusMessage) -> some View {
+        Label(status.text, systemImage: status.systemImage)
+            .font(.subheadline)
+            .foregroundStyle(.secondary)
+            .symbolRenderingMode(.hierarchical)
+            .imageScale(.medium)
+            .tint(status.isError ? .orange : .secondary)
+            .padding(12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(.fill.tertiary, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .listRowSeparator(.hidden)
+            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+    }
+
+    @ViewBuilder private var emptyState: some View {
+        if days.isEmpty {
+            if !searchText.isEmpty {
+                ContentUnavailableView.search(text: searchText)
+            } else if items.isEmpty {
+                if appModel.isRefreshing {
+                    ProgressView("Loading your timeline…")
+                } else {
+                    ContentUnavailableView {
+                        Label("No Articles Yet", systemImage: "newspaper")
+                    } description: {
+                        Text("Links shared in your Bluesky timeline will appear here. Pull down to refresh.")
+                    }
+                }
+            } else {
+                switch filter {
+                case .saved:
+                    ContentUnavailableView {
+                        Label("No Saved Articles", systemImage: "bookmark")
+                    } description: {
+                        Text("Swipe left on an article to save it for later.")
+                    }
+                case .unread, .all:
+                    ContentUnavailableView {
+                        Label("All Caught Up", systemImage: "checkmark.circle")
+                    } description: {
+                        Text("You've read everything in your list.")
+                    }
+                }
             }
         }
     }
 
     private func newArticlesPill(_ n: Int) -> some View {
-        HStack(spacing: Space.s) {
-            Circle().fill(Color.accent).frame(width: 6, height: 6)
+        Label {
             Text("^[\(n) new article](inflect: true)")
-                .font(.footnote.weight(.semibold))
-                .foregroundStyle(Color.ink)
+        } icon: {
+            Image(systemName: "arrow.down.circle.fill")
         }
-        .padding(.horizontal, 15).padding(.vertical, 9)
-        .background(Capsule().fill(Color.surface))
-        .overlay(Capsule().stroke(Color.rule, lineWidth: 0.5))
-        .padding(.top, Space.s)
-        .transition(.opacity)
-    }
-
-    /// Design spec: an 11pt-padded strip on #F2EFE8 (light) between two rules, a 6pt
-    /// dot + message in .footnote, inkSecondary. No token in Theme.swift matches
-    /// #F2EFE8 (no dark value given either), and adding a tenth color asset isn't
-    /// allowed by the brief — using `surface` as the nearest existing "elevated
-    /// strip" role instead. Flagged to Corey; not a silent swap.
-    /// Shared by the offline strip and the error/rate-limit banner; only the dot
-    /// color and text differ.
-    private func statusStrip(text: String, dotColor: Color) -> some View {
-        HStack(spacing: Space.s) {
-            Circle().fill(dotColor).frame(width: 6, height: 6)
-            Text(text)
-                .font(.footnote)
-                .foregroundStyle(Color.inkSecondary)
-        }
-        .padding(11)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.surface)
-    }
-
-    private var dateLine: String {
-        let f = DateFormatter(); f.dateFormat = "EEEE, MMMM d"
-        return f.string(from: .now)
+        .font(.subheadline.weight(.semibold))
+        .padding(.horizontal, 16).padding(.vertical, 10)
+        .background(.regularMaterial, in: Capsule())
+        .shadow(color: .black.opacity(0.12), radius: 8, y: 2)
+        .padding(.bottom, 12)
+        .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 
     // MARK: data
 
     private var filteredItems: [LinkItem] {
-        items.filter { item in
-            if hideReadItems && item.isRead { return false }
+        let query = searchText.trimmingCharacters(in: .whitespaces)
+        return items.filter { item in
+            if hideReadItems && item.isRead && filter != .saved { return false }
             switch filter {
-            case .all: return true
-            case .unread: return !item.isRead
-            case .saved: return item.isSaved
+            case .all: break
+            case .unread: if item.isRead { return false }
+            case .saved: if !item.isSaved { return false }
             }
+            guard !query.isEmpty else { return true }
+            return item.headline.localizedStandardContains(query)
+                || item.publication.localizedStandardContains(query)
+                || item.sharedByHandle.localizedStandardContains(query)
         }
     }
 
-    /// Two `LinkItem`s can end up representing the same article under different
-    /// normalized URLs (e.g. a shortener that resolved on one share but not another).
     /// See `ArticleDeduplicator` for the keying/placeholder rules.
     private var deduplicatedItems: [LinkItem] {
         ArticleDeduplicator.dedupe(filteredItems)
@@ -269,19 +270,19 @@ struct ReadingListView: View {
     private func performRefresh() async {
         await appModel.refreshTimeline(context: modelContext)
         if let count = appModel.lastRefreshNewItemCount, count > 0 {
-            withAnimation { newCount = count }
-            try? await Task.sleep(nanoseconds: 2_500_000_000)
-            withAnimation { newCount = nil }
+            withAnimation(.spring) { newCount = count }
+            try? await Task.sleep(for: .seconds(2.5))
+            withAnimation(.spring) { newCount = nil }
         }
     }
 
     private func toggleRead(_ item: LinkItem) {
-        item.isRead.toggle()
+        withAnimation { item.isRead.toggle() }
         try? modelContext.save()
     }
 
     private func toggleSaved(_ item: LinkItem) {
-        item.isSaved.toggle()
+        withAnimation { item.isSaved.toggle() }
         try? modelContext.save()
     }
 

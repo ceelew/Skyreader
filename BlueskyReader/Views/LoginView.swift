@@ -1,5 +1,5 @@
 //  LoginView.swift
-//  Typographic form: no boxed fields, just labels over hairline-underlined text.
+//  Standard iOS sign-in: app icon and name, a grouped pair of fields, a prominent button.
 
 import SwiftUI
 
@@ -8,120 +8,141 @@ struct LoginView: View {
     @State private var appPassword = ""
     @State private var error: String?
     @State private var isSigningIn = false
+    @FocusState private var focusedField: Field?
     let signIn: (String, String) async throws -> Void
     var message: String? = nil
 
+    private enum Field { case handle, password }
+
     var body: some View {
-        // Scrolls so accessibility text sizes never clip; the min-height frame keeps the
-        // footer pinned to the bottom at regular sizes.
-        GeometryReader { geo in
-            ScrollView {
-                form.frame(minHeight: geo.size.height)
-            }
-            .scrollBounceBehavior(.basedOnSize)
-        }
-        .background(Color.paper)
-    }
+        ScrollView {
+            VStack(spacing: 28) {
+                header
 
-    private var form: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            VStack(alignment: .leading, spacing: 14) {
-                Text("Skyreader")
-                    .font(.system(size: 40, weight: .semibold, design: .serif))
-                    .tracking(-0.7)
-                    .foregroundStyle(Color.ink)
-                Text("Every link from your Bluesky timeline, as a reading list.")
-                    .font(.system(.title3, design: .serif))
-                    .foregroundStyle(Color.inkSecondary)
-                    .fixedSize(horizontal: false, vertical: true)
                 if let message {
-                    Text(message)
-                        .font(.footnote)
-                        .foregroundStyle(Color.inkSecondary)
+                    Label(message, systemImage: "info.circle")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
-            }
-            .padding(.top, 44)
 
-            VStack(alignment: .leading, spacing: 26) {
-                field("Handle", hasError: false) {
-                    TextField("you.bsky.social", text: $handle)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled()
-                        .textContentType(.username)
+                VStack(alignment: .leading, spacing: 8) {
+                    fields
+                    if let error {
+                        Label(error, systemImage: "exclamationmark.circle.fill")
+                            .font(.footnote)
+                            .foregroundStyle(Color.destructive)
+                            .padding(.horizontal, 4)
+                    }
                 }
-                field("App password", hasError: error != nil) {
-                    SecureField("xxxx-xxxx-xxxx-xxxx", text: $appPassword)
-                        .textContentType(.password)
-                }
-                if let error {
-                    Text(error)
-                        .font(.footnote)
-                        .foregroundStyle(Color.destructive)
-                        .padding(.top, -14)
-                }
-            }
-            .padding(.top, 36)
 
-            Button(action: attempt) {
-                Text(isSigningIn ? "Signing in…" : "Sign in")
+                Button(action: attempt) {
+                    Group {
+                        if isSigningIn {
+                            ProgressView().tint(.white)
+                        } else {
+                            Text("Sign In")
+                        }
+                    }
                     .font(.headline)
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity, minHeight: 52)
-                    .background(RoundedRectangle(cornerRadius: 12).fill(Color.accentStrong))
-            }
-            .disabled(handle.isEmpty || appPassword.isEmpty || isSigningIn)
-            .padding(.top, 28)
-
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Skyreader signs in with an *app password*, not your account password. Bluesky lets you create one just for this app, and revoke it any time.")
-                    .font(.footnote)
-                    .foregroundStyle(Color.inkSecondary)
-                Link(destination: URL(string: "https://bsky.app/settings/app-passwords")!) {
-                    Text("Create an app password ↗")
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(Color.accent)
+                    .frame(maxWidth: .infinity)
                 }
-            }
-            .padding(.top, 22)
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .disabled(!canSubmit)
 
-            Spacer(minLength: Space.l)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Skyreader signs in with an app password, not your account password. You can create one just for this app in Bluesky and revoke it any time.")
+                    Link("Create an App Password", destination: URL(string: "https://bsky.app/settings/app-passwords")!)
+                        .fontWeight(.semibold)
+                }
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
-            VStack(alignment: .leading, spacing: 0) {
-                Rectangle().fill(Color.rule).frame(height: 0.5)
-                Text("Credentials are held in the iOS Keychain and sent only to bsky.social. Skyreader has no server.")
+                Label("Your credentials stay in the iOS Keychain and are sent only to Bluesky.",
+                      systemImage: "lock.fill")
                     .font(.caption)
-                    .foregroundStyle(Color.inkTertiary)
-                    .padding(.top, Space.l)
+                    .foregroundStyle(.tertiary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.top, 8)
             }
+            .padding(.horizontal, 24)
+            .padding(.bottom, 24)
         }
-        .padding(.horizontal, Space.xxl)
-        .padding(.bottom, 34)
+        .scrollDismissesKeyboard(.interactively)
+        .background(Color(.systemGroupedBackground))
     }
 
-    @ViewBuilder
-    private func field<F: View>(_ label: String, hasError: Bool, @ViewBuilder content: () -> F) -> some View {
-        VStack(alignment: .leading, spacing: Space.m) {
-            Text(label)
-                .font(.caption.weight(.semibold))
-                .textCase(.uppercase)
-                .tracking(1.1)
-                .foregroundStyle(Color.inkTertiary)
-            content()
+    private var header: some View {
+        VStack(spacing: 12) {
+            Image("AppIconImage")
+                .resizable()
+                .frame(width: 96, height: 96)
+                .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+                .shadow(color: .black.opacity(0.15), radius: 10, y: 4)
+                .accessibilityHidden(true)
+            Text("Skyreader")
+                .font(.system(.largeTitle, design: .serif).weight(.bold))
+            Text("Every link from your Bluesky timeline, as a reading list.")
                 .font(.body)
-                .foregroundStyle(Color.ink)
-                .frame(minHeight: 24)
-            Rectangle()
-                .fill(hasError ? Color.destructive : Color.rule)
-                .frame(height: hasError ? 1 : 0.5)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
         }
+        .padding(.top, 56)
+    }
+
+    private var fields: some View {
+        VStack(spacing: 0) {
+            fieldRow(systemImage: "at") {
+                TextField("Handle (you.bsky.social)", text: $handle)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+                    .keyboardType(.emailAddress)
+                    .textContentType(.username)
+                    .focused($focusedField, equals: .handle)
+                    .submitLabel(.next)
+                    .onSubmit { focusedField = .password }
+            }
+            Divider().padding(.leading, 48)
+            fieldRow(systemImage: "key") {
+                SecureField("App Password", text: $appPassword)
+                    .textContentType(.password)
+                    .focused($focusedField, equals: .password)
+                    .submitLabel(.go)
+                    .onSubmit { if canSubmit { attempt() } }
+            }
+        }
+        .background(Color(.secondarySystemGroupedBackground),
+                    in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+    }
+
+    private func fieldRow<F: View>(systemImage: String, @ViewBuilder field: () -> F) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: systemImage)
+                .foregroundStyle(.secondary)
+                .frame(width: 22)
+                .accessibilityHidden(true)
+            field()
+        }
+        .padding(.horizontal, 14)
+        .frame(minHeight: 50)
+    }
+
+    private var canSubmit: Bool {
+        !handle.trimmingCharacters(in: .whitespaces).isEmpty && !appPassword.isEmpty && !isSigningIn
     }
 
     private func attempt() {
         error = nil; isSigningIn = true
+        focusedField = nil
+        let trimmedHandle = handle.trimmingCharacters(in: .whitespacesAndNewlines)
+            .trimmingCharacters(in: CharacterSet(charactersIn: "@"))
+        let trimmedPassword = appPassword.trimmingCharacters(in: .whitespacesAndNewlines)
         Task {
-            do { try await signIn(handle, appPassword) }
+            do { try await signIn(trimmedHandle, trimmedPassword) }
             catch ATProtoError.invalidCredentials {
-                self.error = "That handle and app password didn't match. Check for a stray space at the end."
+                self.error = "That handle and app password didn't match."
             } catch ATProtoError.network {
                 self.error = "Couldn't reach Bluesky. Check your connection and try again."
             } catch {
