@@ -55,6 +55,7 @@ struct LoginView: View {
                     Text("Skyreader signs in with an app password, not your account password. You can create one just for this app in Bluesky and revoke it any time.")
                     Link("Create an App Password", destination: URL(string: "https://bsky.app/settings/app-passwords")!)
                         .fontWeight(.semibold)
+                        .foregroundStyle(Color.accent)   // the block's .secondary would grey it out
                 }
                 .font(.footnote)
                 .foregroundStyle(.secondary)
