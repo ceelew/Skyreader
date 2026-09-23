@@ -28,6 +28,7 @@
 		57373B1C9DBB7D74A6E57701 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D9BA92E279A5B8FC475719 /* Theme.swift */; };
 		64E7CFDCCF750F9D55584475 /* URLNormalizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 561F0D0B81ADEECC62A3CBCA /* URLNormalizer.swift */; };
 		6CF67FB471901C5FB589002C /* BlueskyReaderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F2F74B17400F77827DD216E /* BlueskyReaderApp.swift */; };
+		782F076A400881FFC7498E16 /* SiteNameCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BF2019D5442B7584F203E2 /* SiteNameCacheTests.swift */; };
 		810DB27333E71F27457E8FF8 /* ArticleRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A305029EA9F5242AA63A1F7 /* ArticleRow.swift */; };
 		8460407D69D10D17FD06BA4D /* DateParsingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5084A78DAAF166958AA41A3 /* DateParsingTests.swift */; };
 		87C3F6AC868E1CB6E2CA6CD5 /* BackgroundRefreshManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 910970FFE5363CAAF1C12D80 /* BackgroundRefreshManager.swift */; };
@@ -38,6 +39,7 @@
 		9E8B158DC5E8C40C9A3CD2A4 /* DateGrouping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86FFE1CA6140B3CA5084FEFB /* DateGrouping.swift */; };
 		A11FF7B57AAF2E1639A5ACA9 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DB94B880EC5109313B74C90 /* RootView.swift */; };
 		ABAAFB225FE44C349190EFDB /* ATProtoClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F487299BBCC853421FCAFDF2 /* ATProtoClient.swift */; };
+		B3C0D4F3C5384E830A6E58E2 /* SiteNameCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956C5302D298CD9E1F71AE05 /* SiteNameCache.swift */; };
 		C0A7EA56C1227FFE119AE808 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A69992EDD3BA1BC515BBD883 /* KeychainStore.swift */; };
 		C1DD7504C0BD57440AEC3EF6 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43A1FC8D85FE22C539616103 /* LoginView.swift */; };
 		C3242E3673C0AB3766EA722F /* ArticleDeduplicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69B34E9068CD963D88A949EC /* ArticleDeduplicator.swift */; };
@@ -85,6 +87,7 @@
 		70C02A75EFAED02C5CE9E34E /* LinkItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkItem.swift; sourceTree = "<group>"; };
 		71A1CC1E67D4B8659E7C8212 /* repost.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = repost.json; sourceTree = "<group>"; };
 		736D2E66F2D46E934758157E /* IngestState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngestState.swift; sourceTree = "<group>"; };
+		75BF2019D5442B7584F203E2 /* SiteNameCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiteNameCacheTests.swift; sourceTree = "<group>"; };
 		76A663770CEB185148EE60B1 /* no_links.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = no_links.json; sourceTree = "<group>"; };
 		76D435ACDF3C89EE6316FAD4 /* facet_only_link.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = facet_only_link.json; sourceTree = "<group>"; };
 		7D41DC561E60785DCB6488AA /* FixtureLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureLoader.swift; sourceTree = "<group>"; };
@@ -95,6 +98,7 @@
 		86819AB2830ABE741C5F5FD5 /* ReadingListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingListView.swift; sourceTree = "<group>"; };
 		86FFE1CA6140B3CA5084FEFB /* DateGrouping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateGrouping.swift; sourceTree = "<group>"; };
 		910970FFE5363CAAF1C12D80 /* BackgroundRefreshManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundRefreshManager.swift; sourceTree = "<group>"; };
+		956C5302D298CD9E1F71AE05 /* SiteNameCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiteNameCache.swift; sourceTree = "<group>"; };
 		978E5CD58EE4324E3AEB43E4 /* LinkExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkExtractor.swift; sourceTree = "<group>"; };
 		9D2B28462884C1B4703EB34C /* HeadlinePageFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadlinePageFetcher.swift; sourceTree = "<group>"; };
 		9E18BE484565EA5E0C1963E7 /* ATProtoURI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ATProtoURI.swift; sourceTree = "<group>"; };
@@ -181,6 +185,7 @@
 				978E5CD58EE4324E3AEB43E4 /* LinkExtractor.swift */,
 				A451995DE5D5A06AC2939769 /* PublicationMapper.swift */,
 				7003A625B1FBAD910675327B /* RetentionService.swift */,
+				956C5302D298CD9E1F71AE05 /* SiteNameCache.swift */,
 				561F0D0B81ADEECC62A3CBCA /* URLNormalizer.swift */,
 			);
 			path = Ingest;
@@ -260,6 +265,7 @@
 				5D16A97672452FBD2316448A /* IngestCheckpointTests.swift */,
 				AFD9C489ED596775A6BE0633 /* LinkExtractorTests.swift */,
 				1581B7795F025AD3AFF51D55 /* PublicationMapperTests.swift */,
+				75BF2019D5442B7584F203E2 /* SiteNameCacheTests.swift */,
 				F0C6D4A024344C33B3DCDE4B /* URLNormalizerTests.swift */,
 				98E174B5C0EF225568B56EC6 /* Fixtures */,
 			);
@@ -400,6 +406,7 @@
 				EABE026B9699BE7130BC377A /* RetentionService.swift in Sources */,
 				A11FF7B57AAF2E1639A5ACA9 /* RootView.swift in Sources */,
 				CC8EE2CEB61445918578EBD3 /* SettingsView.swift in Sources */,
+				B3C0D4F3C5384E830A6E58E2 /* SiteNameCache.swift in Sources */,
 				57373B1C9DBB7D74A6E57701 /* Theme.swift in Sources */,
 				64E7CFDCCF750F9D55584475 /* URLNormalizer.swift in Sources */,
 			);
@@ -418,6 +425,7 @@
 				F7DE1226E21F1A20D6E2707B /* IngestCheckpointTests.swift in Sources */,
 				386F3300A84D3A2155C165CD /* LinkExtractorTests.swift in Sources */,
 				D0FA2CCB0E595BEE215895B6 /* PublicationMapperTests.swift in Sources */,
+				782F076A400881FFC7498E16 /* SiteNameCacheTests.swift in Sources */,
 				C626C95017A3973B36D79319 /* URLNormalizerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -9,6 +9,7 @@ final class IngestService {
     private let client: ATProtoClient
     private let maxPages: Int
     private let maxPosts: Int
+    private let siteNameCache: SiteNameCache
 
     struct RefreshResult {
         let newItemCount: Int
@@ -20,10 +21,11 @@ final class IngestService {
         let lastRefreshHitCap: Bool
     }
 
-    init(client: ATProtoClient, maxPages: Int = 10, maxPosts: Int = 1000) {
+    init(client: ATProtoClient, maxPages: Int = 10, maxPosts: Int = 1000, siteNameCache: SiteNameCache = .shared) {
         self.client = client
         self.maxPages = maxPages
         self.maxPosts = maxPosts
+        self.siteNameCache = siteNameCache
     }
 
     @discardableResult
@@ -114,7 +116,8 @@ final class IngestService {
         existingURLs.insert(normalized)
 
         let host = URLNormalizer.host(of: resolvedURL) ?? normalized
-        let publication = PublicationMapper.publication(ogSiteName: nil, finalURLHost: host)
+        let cachedSiteName = siteNameCache.siteName(forHost: host)
+        let publication = PublicationMapper.publication(ogSiteName: cachedSiteName, finalURLHost: host)
 
         let hasEmbedTitle = !(link.headlineFromEmbed?.isEmpty ?? true)
         let headline = hasEmbedTitle ? link.headlineFromEmbed! : host
